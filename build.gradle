@@ -1,4 +1,4 @@
-group 'com.tenkiv.coral'
+group 'com.tenkiv'
 version '0.1-SNAPSHOT'
 
 buildscript {
@@ -21,3 +21,9 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
+
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+apply from: 'maven_push.gradle'

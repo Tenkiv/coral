@@ -1,0 +1,143 @@
+/*
+ * Copyright 2014 Tenkiv, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+/*apply plugin: 'java'
+apply plugin: 'java-library-distribution'*/
+
+def mavenUrl
+if (isReleaseBuild()) {
+    println 'RELEASE BUILD'
+} else {
+    println 'DEBUG BUILD'
+}
+
+def getRepositoryUsername() {
+    Properties localProperties = new Properties()
+    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    return hasProperty('sonatype_user') ? sonatype_user : localProperties.getProperty('sonatype_user')
+}
+
+def getRepositoryPassword() {
+    Properties localProperties = new Properties()
+    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    return hasProperty('sonatype_pass') ? sonatype_pass : localProperties.getProperty('sonatype_pass')
+}
+
+boolean isRelease() {
+    return /*VERSION_NAME.contains("SNAPSHOT") == false*/ true
+}
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                pom.artifactId = POM_ARTIFACT_ID
+
+                repository(url: isRelease() ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : mavenLocal().url) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                }
+
+                snapshotRepository(url: isRelease() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                }
+
+                pom.project {
+                    name POM_NAME
+                    packaging POM_PACKAGING
+                    description POM_DESCRIPTION
+                    url POM_URL
+
+                    scm {
+                        url POM_SCM_URL
+                        connection POM_SCM_CONNECTION
+                        developerConnection POM_SCM_DEV_CONNECTION
+                    }
+
+                    licenses {
+                        license {
+                            name POM_LICENCE_NAME
+                            url POM_LICENCE_URL
+                            distribution POM_LICENCE_DIST
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
+                            email POM_DEVELOPER_EMAIL
+                            organization POM_DEVELOPER_ORGANIZATION
+                            organizationUrl POM_DEVELOPER_ORGANIZATION_URL
+                        }
+                    }
+
+                    pom.whenConfigured {
+                        p -> p.dependencies = p.dependencies.findAll {
+                            dep -> dep.artifactId != "shared-java-library"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+
+        required { isRelease() }
+
+        Properties localProperties = new Properties()
+        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+        allprojects { ext."signing.keyId" = localProperties.getProperty('keyId') }
+        allprojects { ext."signing.secretKeyRingFile" = localProperties.getProperty('secretKeyRingFile') }
+        allprojects { ext."signing.password" = localProperties.getProperty('password') }
+
+        sign configurations.archives
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+
+    task libJar(type: Jar) {
+        from {
+
+            configurations.compile.collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        }
+        with jar
+    }
+
+    artifacts {
+        archives libJar
+        archives javadocJar
+        archives sourcesJar
+    }
+}
