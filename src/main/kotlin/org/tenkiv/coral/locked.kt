@@ -4,26 +4,22 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-interface Locked<out T> {
-    val lock: ReentrantReadWriteLock
-    val value: T
+//TODO: Change these to data classes when Kotlin 1.1 is released.
+//TODO: Probably change these to value types when Kotlin adds support for such a thing.
 
-    fun <R> read(action: (T) -> R): R = lock.read { action(value) }
+open class LockedVal<out T>(open val value: T,
+                            open val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) {
 
-    fun <R> modify(action: (T) -> R): R = lock.write { action(value) }
+    inline fun <R> read(action: (T) -> R): R = lock.read { action(value) }
+
+    inline fun <R> modify(action: (T) -> R): R = lock.write { action(value) }
 
 }
 
-interface LockedVar<T> : Locked<T> {
-    override var value: T
+open class LockedVar<T>(override var value: T,
+                        lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) : LockedVal<T>(value, lock) {
 
-    fun safeSet(obj: T) {
+    open fun safeSet(obj: T) {
         lock.write { this.value = obj }
     }
 }
-
-data class LockedVal<out T>(override val value: T,
-                            override val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) : Locked<T>
-
-data class LockedVarC<T>(override var value: T,
-                         override val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) : LockedVar<T>
