@@ -5,7 +5,7 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 
 //TODO: Change these to data classes when Kotlin 1.1 is released.
-//TODO: Probably change these to value types when Kotlin adds support for such a thing.
+//TODO: Maybe change these to value types when Kotlin adds support for such a thing.
 
 open class LockedVal<out T>(open val value: T,
                             open val lock: ReentrantReadWriteLock = ReentrantReadWriteLock()) {
