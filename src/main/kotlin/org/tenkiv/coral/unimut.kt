@@ -1,8 +1,8 @@
 package org.tenkiv.coral
 
+import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.concurrent.read
-import kotlin.concurrent.write
+import kotlin.concurrent.withLock
 import kotlin.reflect.KProperty
 
 
@@ -21,11 +21,11 @@ class KeyNotFoundException : Throwable {
 }
 
 open class UniMutDelegate<T : Any> internal constructor(protected open var onSet: ((T) -> Unit)?,
-                                                        private val onGet: (T?) -> Unit) {
+                                                        private val onGet: ((T?) -> Unit)?) {
     open var value: T? = null
 
     open operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        onGet(value)
+        onGet?.invoke(value)
         return value ?:
                 throw UninitializedPropertyAccessException("Attempted to access unitmut property before it was set")
     }
@@ -33,30 +33,29 @@ open class UniMutDelegate<T : Any> internal constructor(protected open var onSet
     open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         if (this.value == null) {
             this.value = value
-            onSet!!(value)
+            onSet?.invoke(value)
             onSet = null
         } else
             throw AlreadySetException("Attempted to set a SetOnce property that was already set.")
     }
 }
 
-private class PublicationSafeUnitMutDelegate<T : Any>(onSet: (T) -> Unit,
-                                                      onGet: (T?) -> Unit) : UniMutDelegate<T>(onSet, onGet) {
+private class PublicationSafeUnitMutDelegate<T : Any>(@Volatile override var onSet: ((T) -> Unit)?,
+                                                      onGet: ((T?) -> Unit)?) : UniMutDelegate<T>(onSet, onGet) {
     @Volatile override var value: T? = null
-    @Volatile override var onSet: ((T) -> Unit)? = onSet
 }
 
-private class SynchronisedUniMutDelegate<T : Any>(onSet: (T) -> Unit,
-                                                  onGet: (T?) -> Unit) : UniMutDelegate<T>(onSet, onGet) {
-    @Volatile override var onSet: ((T) -> Unit)? = onSet
-    private val lock = ReentrantReadWriteLock()
+private class SynchronisedUniMutDelegate<T : Any>(
+        @Volatile override var onSet: ((T) -> Unit)?,
+        onGet: ((T?) -> Unit)?,
+        private val lock: ReadWriteLock = ReentrantReadWriteLock()) : UniMutDelegate<T>(onSet, onGet) {
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T = lock.read {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T = lock.readLock().withLock {
         super.getValue(thisRef, property)
     }
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        lock.write { super.setValue(thisRef, property, value) }
+        lock.writeLock().withLock { super.setValue(thisRef, property, value) }
     }
 }
 
@@ -68,11 +67,20 @@ private class SynchronisedUniMutDelegate<T : Any>(onSet: (T) -> Unit,
  * @param onGet is called before returning the value of the property.
  */
 fun <T : Any> unimut(threadSafetyMode: LazyThreadSafetyMode = LazyThreadSafetyMode.PUBLICATION,
-                     onGet: (T?) -> Unit = {},
-                     onSet: (T) -> Unit = {}): UniMutDelegate<T> {
+                     onGet: ((T?) -> Unit)? = null,
+                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> {
     when (threadSafetyMode) {
         LazyThreadSafetyMode.SYNCHRONIZED -> return SynchronisedUniMutDelegate(onSet, onGet)
         LazyThreadSafetyMode.PUBLICATION -> return PublicationSafeUnitMutDelegate(onSet, onGet)
         LazyThreadSafetyMode.NONE -> return UniMutDelegate(onSet, onGet)
     }
 }
+
+/**
+ * Creates a Synchronised unimut and allows to use a custom ReadWriteLock. This is only recommended for advanced users
+ * who have a specific reason for wanting to do this.
+ */
+fun <T : Any> unimut(lock: ReadWriteLock,
+                     onGet: ((T?) -> Unit)? = null,
+                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> =
+        SynchronisedUniMutDelegate(onSet, onGet, lock)
