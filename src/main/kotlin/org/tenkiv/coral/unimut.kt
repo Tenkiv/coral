@@ -14,14 +14,14 @@ import kotlin.reflect.KProperty
  * @param onSet is called after setting the backing field to the new value.
  * @param onGet is called before returning the value of the property.
  */
-fun <T : Any> unimut(concurrencyMode: UnimutConcurrencyMode = UnimutConcurrencyMode.PUBLICATION,
+fun <T : Any> unimut(concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyMode.PUBLICATION,
                      onGet: ((T?) -> Unit)? = null,
                      onSet: ((T) -> Unit)? = null): UniMutDelegate<T> {
     when (concurrencyMode) {
-        UnimutConcurrencyMode.BLOCKING -> return BlockingUniMutDelegate(onSet, onGet)
-        UnimutConcurrencyMode.SYNCHRONIZED -> return SynchronisedUniMutDelegate(onSet, onGet)
-        UnimutConcurrencyMode.PUBLICATION -> return PublicationSafeUnitMutDelegate(onSet, onGet)
-        UnimutConcurrencyMode.NONE -> return UniMutDelegate(onSet, onGet)
+        UniMutConcurrencyMode.BLOCKING -> return BlockingUniMutDelegate(onSet, onGet)
+        UniMutConcurrencyMode.SYNCHRONIZED -> return SynchronisedUniMutDelegate(onSet, onGet)
+        UniMutConcurrencyMode.PUBLICATION -> return PublicationSafeUnitMutDelegate(onSet, onGet)
+        UniMutConcurrencyMode.NONE -> return UniMutDelegate(onSet, onGet)
     }
 }
 
@@ -41,7 +41,7 @@ fun <T : Any> unimut(blockMode: Boolean,
         else
             SynchronisedUniMutDelegate(onSet, onGet, lock)
 
-enum class UnimutConcurrencyMode {
+enum class UniMutConcurrencyMode {
     /**
      * Blocks the thread attempting to get the property until the property is set.
      */
