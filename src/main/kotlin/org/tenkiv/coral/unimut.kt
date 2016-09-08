@@ -29,14 +29,14 @@ fun <T : Any> unimut(concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyM
  * Creates a Synchronised unimut and allows to use a custom ReadWriteLock. This is only recommended for advanced users
  * who have a specific reason for wanting to do this.
  *
- * @param blockMode with blockMode enabled the thread will be blocked until this property is set when you try to
+ * @param shouldBlock with shouldBlock set to true the thread will be blocked until this property is set when you try to
  * access it.
  */
-fun <T : Any> unimut(blockMode: Boolean,
+fun <T : Any> unimut(shouldBlock: Boolean,
                      lock: ReadWriteLock,
                      onGet: ((T?) -> Unit)? = null,
                      onSet: ((T) -> Unit)? = null): UniMutDelegate<T> =
-        if (blockMode)
+        if (shouldBlock)
             BlockingUniMutDelegate(onSet, onGet, lock)
         else
             SynchronisedUniMutDelegate(onSet, onGet, lock)
