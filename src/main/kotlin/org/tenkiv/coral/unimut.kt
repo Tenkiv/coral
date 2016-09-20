@@ -56,7 +56,7 @@ open class UniMutDelegate<T : Any> internal constructor(protected open var onSet
     open operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         onGet?.invoke(value)
         return value ?:
-                throw UninitializedPropertyAccessException("Attempted to access unitmut property before it was set")
+                throw UninitializedPropertyAccessException("Attempted to access unimut property before it was set")
     }
 
     open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
@@ -65,7 +65,7 @@ open class UniMutDelegate<T : Any> internal constructor(protected open var onSet
                 onSet?.invoke(value)
                 onSet = null
             } else
-                throw AlreadySetException("Attempted to set a SetOnce property that was already set.")
+                throw AlreadySetException("Attempted to set a unimut property that was already set.")
 
 }
 
