@@ -1,8 +1,6 @@
 package org.tenkiv.coral
 
-import java.util.concurrent.locks.Condition
-import java.util.concurrent.locks.ReadWriteLock
-import java.util.concurrent.locks.ReentrantReadWriteLock
+import java.util.concurrent.locks.*
 import kotlin.concurrent.withLock
 import kotlin.reflect.KProperty
 
@@ -26,20 +24,20 @@ fun <T : Any> unimut(concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyM
 }
 
 /**
- * Creates a Synchronised unimut and allows to use a custom ReadWriteLock. This is only recommended for advanced users
+ * Creates a Synchronised unimut and allows use of a custom ReadWriteLock. This is only recommended for advanced users
  * who have a specific reason for wanting to do this.
- *
- * @param shouldBlock with shouldBlock set to true the thread will be blocked until this property is set when you try to
- * access it.
  */
-fun <T : Any> unimut(shouldBlock: Boolean,
-                     lock: ReadWriteLock,
+fun <T : Any> unimut(lock: ReadWriteLock,
                      onGet: ((T?) -> Unit)? = null,
-                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> =
-        if (shouldBlock)
-            BlockingUniMutDelegate(onSet, onGet, lock)
-        else
-            SynchronisedUniMutDelegate(onSet, onGet, lock)
+                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> = SynchronisedUniMutDelegate(onSet, onGet, lock)
+
+/**
+ * Creates a Blocking unimut and allows use of a custom Lock. This is only recommended for advanced users
+ * who have a specific reason for wanting to do this.
+ */
+fun <T : Any> unimut(lock: Lock,
+                     onGet: ((T?) -> Unit)? = null,
+                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> = BlockingUniMutDelegate(onSet, onGet, lock)
 
 enum class UniMutConcurrencyMode {
     /**
@@ -61,14 +59,14 @@ open class UniMutDelegate<T : Any> internal constructor(protected open var onSet
                 throw UninitializedPropertyAccessException("Attempted to access unitmut property before it was set")
     }
 
-    open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        if (this.value == null) {
-            this.value = value
-            onSet?.invoke(value)
-            onSet = null
-        } else
-            throw AlreadySetException("Attempted to set a SetOnce property that was already set.")
-    }
+    open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
+            if (this.value == null) {
+                this.value = value
+                onSet?.invoke(value)
+                onSet = null
+            } else
+                throw AlreadySetException("Attempted to set a SetOnce property that was already set.")
+
 }
 
 private class PublicationSafeUnitMutDelegate<T : Any>(@Volatile override var onSet: ((T) -> Unit)?,
@@ -81,49 +79,39 @@ private class SynchronisedUniMutDelegate<T : Any>(
         onGet: ((T?) -> Unit)?,
         private val lock: ReadWriteLock = ReentrantReadWriteLock()) : UniMutDelegate<T>(onSet, onGet) {
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T = lock.readLock().withLock {
-        super.getValue(thisRef, property)
-    }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T =
+            value ?: lock.readLock().withLock { super.getValue(thisRef, property) }
 
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        lock.writeLock().withLock { super.setValue(thisRef, property, value) }
-    }
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
+            lock.writeLock().withLock { super.setValue(thisRef, property, value) }
+
 }
 
 private class BlockingUniMutDelegate<T : Any>(onSet: ((T) -> Unit)?,
                                               onGet: ((T?) -> Unit)?,
-                                              private val lock: ReadWriteLock = ReentrantReadWriteLock()) :
+                                              private val lock: Lock = ReentrantLock()) :
         UniMutDelegate<T>(onSet, onGet) {
-    var setCondition: Condition? = lock.writeLock().newCondition()
+    var setCondition: Condition? = lock.newCondition()
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        lock.readLock().withLock {
-            if (value != null) {
-                onGet?.invoke(value)
-                return value!!
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T =
+            value ?: lock.withLock {
+                if (value != null) {
+                    onGet?.invoke(value)
+                    value!!
+                } else {
+                    setCondition?.await()
+                    onGet?.invoke(value)
+                    value!!
+                }
             }
-        }
-        lock.writeLock().withLock {
-            //Double check that nothing else got the lock and set this while we were upgrading from a read lock to
-            //a write lock
-            if (value != null) {
-                onGet?.invoke(value)
-                return value!!
-            } else {
-                setCondition?.await()
-                onGet?.invoke(value)
-                return value!!
-            }
-        }
-    }
 
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        lock.writeLock().withLock {
-            super.setValue(thisRef, property, value)
-            setCondition?.signalAll()
-            setCondition = null
-        }
-    }
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
+            lock.withLock {
+                super.setValue(thisRef, property, value)
+                setCondition?.signalAll()
+                setCondition = null
+            }
+
 }
 
 class AlreadySetException : UnsupportedOperationException {
