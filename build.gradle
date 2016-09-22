@@ -2,7 +2,7 @@ group 'com.tenkiv.coral'
 version '0.5.0.1-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.0.3'
+    ext.kotlin_version = '1.0.4'
 
     repositories {
         mavenCentral()
