@@ -2,7 +2,9 @@ package org.tenkiv.coral
 
 import java.time.Instant
 
-fun <T> T.at(instant: Instant = Instant.now()): ValueInstant<T> = BasicValueInstant(this, instant)
+infix fun <T> T.at(instant: Instant): ValueInstant<T> = BasicValueInstant(this, instant)
+
+fun <T> T.now(): ValueInstant<T> = BasicValueInstant(this, Instant.now())
 
 interface ValueInstant<out T> {
     val value: T
