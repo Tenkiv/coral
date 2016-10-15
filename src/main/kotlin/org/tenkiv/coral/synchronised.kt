@@ -87,7 +87,7 @@ class SynchronisedSet<E>(override val lock: ReadWriteLock = ReentrantReadWriteLo
 
     override fun retainAll(elements: Collection<E>) = writeLock.withLock { unSyncedCollection.retainAll(elements) }
 
-    @Deprecated(ERROR_MSG_COMP, ReplaceWith("forEachSync()"), DeprecationLevel.ERROR)
+    @Deprecated(ERROR_MSG_COMP, ReplaceWith("forEachSync()"), DeprecationLevel.HIDDEN)
     override fun iterator() = throw UnSynchronisedMethodException(ERROR_MSG_RUN)
 }
 
