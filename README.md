@@ -9,4 +9,4 @@ for null when using a variable set with this delegate, works similarly to latein
 * Locked and LockedVar are very simple constructs for pairing a lock with an object, currently it's meant exclusively for
 use with ReentrantReadWriteLocks.
 
-Coral is in a very early experimental stage of development and currently only works for Android and JVM targets.
+Coral is in a very early experimental stage of development.
