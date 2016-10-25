@@ -28,12 +28,20 @@ inline fun <E> Collection<E>.average(getValue: (E) -> Double, condition: (E) -> 
 inline fun <E> Collection<E>.findRatio(of: (E) -> Double, to: (E) -> Double): Double {
     var firstTotal = 0.0
     var secondTotal = 0.0
-
     forEach {
         firstTotal += of(it)
         secondTotal += to(it)
     }
+    return firstTotal / secondTotal
+}
 
+inline fun <E> Collection<E>.findBooleanRatio(of: (E) -> Boolean, to: (E) -> Boolean): Double {
+    var firstTotal = 0
+    var secondTotal = 0.0
+    forEach {
+        if (of(it)) firstTotal++
+        if (to(it)) secondTotal++
+    }
     return firstTotal / secondTotal
 }
 
@@ -44,4 +52,7 @@ inline fun <E> SynchronisedCollection<E>.average(getValue: (E) -> Double, condit
         lock.readLock().withLock { unSyncedCollection.average(getValue, condition) }
 
 inline fun <E> SynchronisedCollection<E>.findRatio(of: (E) -> Double, to: (E) -> Double) =
+        lock.readLock().withLock { unSyncedCollection.findRatio(of, to) }
+
+inline fun <E> SynchronisedCollection<E>.findBooleanRatio(of: (E) -> Double, to: (E) -> Double) =
         lock.readLock().withLock { unSyncedCollection.findRatio(of, to) }
