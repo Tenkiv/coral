@@ -53,6 +53,7 @@ class SynchronisedVar<T>(override var unSyncedValue: T,
 class UnSynchronisedMethodException(message: String? = null,
                                     cause: Throwable? = null) : Throwable(message, cause)
 
+//TODO: Add synchronised versions of built in Kotlin extensions.
 interface SynchronisedCollection<E> : MutableCollection<E> {
     val lock: ReadWriteLock
     val unSyncedCollection: MutableCollection<E>
