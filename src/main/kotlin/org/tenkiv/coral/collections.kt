@@ -2,6 +2,8 @@ package org.tenkiv.coral
 
 import kotlin.concurrent.withLock
 
+
+//TODO: Add one of these that averages Quantities instead of Doubles.
 inline fun <E> Collection<E>.average(getValue: (E) -> Double): Double {
     var totalValue = 0.0
     forEach {
