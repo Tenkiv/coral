@@ -10,6 +10,9 @@ interface ValueInstant<out T> {
     val value: T
     val instant: Instant
 
+    operator fun component1() = value
+    operator fun component2() = instant
+
     companion object {
         fun <T> of(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
                 BasicValueInstant(value, instant)
