@@ -26,7 +26,6 @@ inline fun <T> SynchronisedCollection<T>.withIterator(action: (iterator: Mutable
         lock.writeLock().withLock { action(unSyncedCollection.iterator()) }
 
 //TODO: Change these to data classes when Kotlin 1.1 is released.
-//TODO: Maybe change these to unSyncedValue types when Kotlin adds support for such a thing.
 open class SynchronisedVal<out T>(open val unSyncedValue: T,
                                   val lock: ReadWriteLock = ReentrantReadWriteLock()) {
 
@@ -57,15 +56,18 @@ class UnSynchronisedMethodException(message: String? = null,
 interface SynchronisedCollection<E> : MutableCollection<E> {
     val lock: ReadWriteLock
     val unSyncedCollection: MutableCollection<E>
+
+    //TODO: probably make these protected.
+    val readLock: Lock
+        get() = lock.readLock()
+    val writeLock: Lock
+        get() = lock.writeLock()
+
 }
 
 class SynchronisedSet<E>(override val lock: ReadWriteLock = ReentrantReadWriteLock(),
                          override val unSyncedCollection: MutableSet<E> = HashSet<E>()) :
         MutableSet<E>, SynchronisedCollection<E> {
-    private val readLock: Lock
-        get() = lock.readLock()
-    private val writeLock: Lock
-        get() = lock.writeLock()
 
     override val size: Int
         get() = readLock.withLock { unSyncedCollection.size }
@@ -95,10 +97,6 @@ class SynchronisedSet<E>(override val lock: ReadWriteLock = ReentrantReadWriteLo
 class SynchronisedList<E>(override val lock: ReadWriteLock = ReentrantReadWriteLock(),
                           override val unSyncedCollection: MutableList<E> = ArrayList<E>()) :
         MutableList<E>, SynchronisedCollection<E> {
-    private val readLock: Lock
-        get() = lock.readLock()
-    private val writeLock: Lock
-        get() = lock.writeLock()
 
     override val size: Int
         get() = readLock.withLock { unSyncedCollection.size }
@@ -109,7 +107,7 @@ class SynchronisedList<E>(override val lock: ReadWriteLock = ReentrantReadWriteL
      * access the backing collection itself, everything in the action block is already synchronised.
      */
     inline fun withIterator(action: (iterator: MutableListIterator<E>) -> Unit, iteratorIndex: Int = 0) =
-            lock.writeLock().withLock { action(unSyncedCollection.listIterator(iteratorIndex)) }
+            writeLock.withLock { action(unSyncedCollection.listIterator(iteratorIndex)) }
 
     override operator fun get(index: Int) = readLock.withLock { unSyncedCollection[index] }
 
