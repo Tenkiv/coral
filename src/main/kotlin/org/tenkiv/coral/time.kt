@@ -4,4 +4,4 @@ import java.time.Instant
 import java.time.temporal.TemporalAmount
 
 fun Instant.isOlderThan(age: TemporalAmount, now: Instant = Instant.now()) =
-        if ((now - age).isAfter(this)) true else false
+        if (this.isBefore(now - age)) true else false
