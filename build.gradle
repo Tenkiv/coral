@@ -1,5 +1,5 @@
 group 'com.tenkiv.coral.jdk'
-version '0.11.0.1-SNAPSHOT'
+version '0.11.1.0-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.0.6'
