@@ -4,7 +4,7 @@ private const val DEFAULT_MAX_ULPS = 10
 
 infix fun Double.pow(exponent: Double) = Math.pow(this, exponent)
 
-fun Double.feq(comparate: Double, epsilon: Double) = if (Math.abs(this - comparate) > epsilon) false else true
+fun Double.feq(comparate: Double, epsilon: Double) = Math.abs(this - comparate) <= epsilon
 
 infix fun Double.feq(comparate: Double): Boolean {
     //TODO: This could be more efficient if the double could broken down to long bits.
@@ -13,7 +13,7 @@ infix fun Double.feq(comparate: Double): Boolean {
     return feq(comparate, epsilon)
 }
 
-fun Float.feq(comparate: Float, epsilon: Float) = if (Math.abs(this - comparate) > epsilon) false else true
+fun Float.feq(comparate: Float, epsilon: Float) = Math.abs(this - comparate) <= epsilon
 
 infix fun Float.feq(comparate: Float): Boolean {
     //TODO: This could be more efficient if the double could broken down to int bits.
