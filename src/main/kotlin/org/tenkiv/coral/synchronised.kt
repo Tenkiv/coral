@@ -25,7 +25,7 @@ inline fun <T> SynchronisedCollection<T>.forEachSync(action: (T) -> Unit) {
 inline fun <T> SynchronisedCollection<T>.withIterator(action: (iterator: MutableIterator<T>) -> Unit) =
         lock.writeLock().withLock { action(unSyncedCollection.iterator()) }
 
-//TODO: Change these to data classes when Kotlin 1.1 is released.
+//TODO: Change these to data classes.
 open class SynchronisedVal<out T>(open val unSyncedValue: T,
                                   val lock: ReadWriteLock = ReentrantReadWriteLock()) {
 
