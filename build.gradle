@@ -27,8 +27,6 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    // This should be temporary until uom is added to jdk.
-    compile 'tec.uom:uom-se:1.0.5'
 }
 
 def isReleaseBuild() {

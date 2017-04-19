@@ -123,19 +123,7 @@ afterEvaluate { project ->
         from sourceSets.main.allSource
     }
 
-
-    task libJar(type: Jar) {
-        from {
-
-            configurations.compile.collect {
-                it.isDirectory() ? it : zipTree(it)
-            }
-        }
-        with jar
-    }
-
     artifacts {
-        archives libJar
         archives javadocJar
         archives sourcesJar
     }
