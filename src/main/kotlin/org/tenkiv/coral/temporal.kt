@@ -2,20 +2,20 @@ package org.tenkiv.coral
 
 import java.time.Duration
 
-val Long.SecondsSpan: Duration
+val Long.secondsSpan: Duration
     get() = Duration.ofSeconds(this)
 
-val Long.HoursSpan: Duration
+val Long.hoursSpan: Duration
     get() = Duration.ofHours(this)
 
-val Long.DaysSpan: Duration
+val Long.daysSpan: Duration
     get() = Duration.ofDays(this)
 
-val Long.MillisSpan: Duration
+val Long.millisSpan: Duration
     get() = Duration.ofMillis(this)
 
-val Long.MinutesSpan: Duration
+val Long.minutesSpan: Duration
     get() = Duration.ofMinutes(this)
 
-val Long.NanosSpan: Duration
+val Long.nanosSpan: Duration
     get() = Duration.ofNanos(this)
