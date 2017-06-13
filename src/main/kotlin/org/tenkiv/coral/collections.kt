@@ -1,9 +1,6 @@
 package org.tenkiv.coral
 
-import kotlin.concurrent.withLock
 
-
-//TODO: Add one of these that averages Quantities instead of Doubles.
 inline fun <E> Collection<E>.average(getValue: (E) -> Double): Double {
     var totalValue = 0.0
     forEach {
@@ -44,15 +41,3 @@ inline fun <E> Collection<E>.findBooleanRatio(of: (E) -> Boolean, to: (E) -> Boo
     }
     return firstTotal / secondTotal
 }
-
-inline fun <E> SynchronisedCollection<E>.average(getValue: (E) -> Double) =
-        lock.readLock().withLock { unSyncedCollection.average(getValue) }
-
-inline fun <E> SynchronisedCollection<E>.average(getValue: (E) -> Double, condition: (E) -> Boolean) =
-        lock.readLock().withLock { unSyncedCollection.average(getValue, condition) }
-
-inline fun <E> SynchronisedCollection<E>.findRatio(of: (E) -> Double, to: (E) -> Double) =
-        lock.readLock().withLock { unSyncedCollection.findRatio(of, to) }
-
-inline fun <E> SynchronisedCollection<E>.findBooleanRatio(of: (E) -> Double, to: (E) -> Double) =
-        lock.readLock().withLock { unSyncedCollection.findRatio(of, to) }
