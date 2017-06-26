@@ -26,17 +26,11 @@ if (isReleaseBuild()) {
 }
 
 def getRepositoryUsername() {
-    Properties localProperties = new Properties()
-    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    return hasProperty('sonatype_user') ? sonatype_user : localProperties.getProperty('sonatype_user')
+    return hasProperty('sonatype_user') ? sonatype_user : project.findProperty('sonatype_user')
 }
 
 def getRepositoryPassword() {
-    Properties localProperties = new Properties()
-    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    return hasProperty('sonatype_pass') ? sonatype_pass : localProperties.getProperty('sonatype_pass')
+    return hasProperty('sonatype_pass') ? sonatype_pass : project.findProperty('sonatype_pass')
 }
 
 boolean isRelease() {
@@ -103,12 +97,9 @@ afterEvaluate { project ->
 
         required { isRelease() }
 
-        Properties localProperties = new Properties()
-        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-        allprojects { ext."signing.keyId" = localProperties.getProperty('keyId') }
-        allprojects { ext."signing.secretKeyRingFile" = localProperties.getProperty('secretKeyRingFile') }
-        allprojects { ext."signing.password" = localProperties.getProperty('password') }
+        allprojects { ext."signing.keyId" = project.findProperty('keyId') }
+        allprojects { ext."signing.secretKeyRingFile" = project.findProperty('secretKeyRingFile') }
+        allprojects { ext."signing.password" = project.findProperty('password') }
 
         sign configurations.archives
     }
