@@ -53,12 +53,18 @@ open class UniMutDelegate<T : Any> internal constructor(protected open var onSet
                                                         protected val onGet: ((T?) -> Unit)?) {
     open var value: T? = null
 
+    /**
+     * @throws UninitializedPropertyAccessException
+     */
     open operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         onGet?.invoke(value)
         return value ?:
                 throw UninitializedPropertyAccessException("Attempted to access unimut property before it was set")
     }
 
+    /**
+     * @throws AlreadySetException
+     */
     open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
             if (this.value == null) {
                 this.value = value
