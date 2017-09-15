@@ -14,14 +14,13 @@ import kotlin.reflect.KProperty
  */
 fun <T : Any> unimut(concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyMode.PUBLICATION,
                      onGet: ((T?) -> Unit)? = null,
-                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> {
-    when (concurrencyMode) {
-        UniMutConcurrencyMode.BLOCKING -> return BlockingUniMutDelegate(onSet, onGet)
-        UniMutConcurrencyMode.SYNCHRONIZED -> return SynchronisedUniMutDelegate(onSet, onGet)
-        UniMutConcurrencyMode.PUBLICATION -> return PublicationSafeUnitMutDelegate(onSet, onGet)
-        UniMutConcurrencyMode.NONE -> return UniMutDelegate(onSet, onGet)
-    }
-}
+                     onSet: ((T) -> Unit)? = null): UniMutDelegate<T> =
+        when (concurrencyMode) {
+            UniMutConcurrencyMode.BLOCKING -> BlockingUniMutDelegate(onSet, onGet)
+            UniMutConcurrencyMode.SYNCHRONIZED -> SynchronisedUniMutDelegate(onSet, onGet)
+            UniMutConcurrencyMode.PUBLICATION -> PublicationSafeUnitMutDelegate(onSet, onGet)
+            UniMutConcurrencyMode.NONE -> UniMutDelegate(onSet, onGet)
+        }
 
 /**
  * Creates a Synchronised unimut and allows use of a custom ReadWriteLock. This is only recommended for advanced users
