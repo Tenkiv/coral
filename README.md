@@ -3,6 +3,8 @@ Some added niceties for Kotlin with JDK target. Coral is meant as a common set o
 
 [![Build Status](https://travis-ci.org/Tenkiv/Coral-JDK.svg?branch=master)](https://travis-ci.org/Tenkiv/Coral-JDK)
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral.jdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral.jdk/core)
+
 Current features:
 * unimut() delegate that initialises a variable to null then allows to be set exactly once at any time.
 Has optional Thread synchronisation built in, as well as optional onSet() and onGet() functions to be executed
