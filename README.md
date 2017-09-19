@@ -1,5 +1,6 @@
 # Coral
 Some added niceties for Kotlin with JDK target. Coral is meant as a common set of low level abstractions required in many of our Kotlin projects at Tenkiv.
+
 [![Build Status](https://travis-ci.org/Tenkiv/Coral-JDK.svg?branch=master)](https://travis-ci.org/Tenkiv/Coral-JDK)
 
 Current features:
