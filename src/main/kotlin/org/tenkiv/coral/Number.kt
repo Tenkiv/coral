@@ -1,23 +1,27 @@
 package org.tenkiv.coral
 
-private const val DEFAULT_MAX_ULPS = 10
+private const val DEFAULT_MAX_ULPS = 2_000
 
 infix fun Double.pow(exponent: Double) = Math.pow(this, exponent)
 
-fun Double.feq(comparate: Double, epsilon: Double) = Math.abs(this - comparate) <= epsilon
+fun Double.feq(comparate: Double, epsilon: Double): Boolean = Math.abs(this - comparate) <= epsilon
 
-infix fun Double.feq(comparate: Double): Boolean {
-    //TODO: This could be more efficient if the double could broken down to long bits.
-    val epsilon = if (comparate > this) Math.ulp(comparate) * DEFAULT_MAX_ULPS else Math.ulp(this) * DEFAULT_MAX_ULPS
+fun Double.feq(comparate: Double, maxUlps: Int): Boolean {
+    //TODO: This might be more efficient if the double could broken down to long bits.
+    val epsilon = if (comparate > this) Math.ulp(comparate) * maxUlps else Math.ulp(this) * maxUlps
+
+    return feq(comparate, epsilon)
+}
+
+infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_MAX_ULPS)
+
+fun Float.feq(comparate: Float, epsilon: Float): Boolean = Math.abs(this - comparate) <= epsilon
+
+fun Float.feq(comparate: Float, maxUlps: Int): Boolean {
+    //TODO: This might be more efficient if the double could broken down to long bits.
+    val epsilon = if (comparate > this) Math.ulp(comparate) * maxUlps else Math.ulp(this) * maxUlps
 
     return feq(comparate, epsilon)
 }
 
-fun Float.feq(comparate: Float, epsilon: Float) = Math.abs(this - comparate) <= epsilon
-
-infix fun Float.feq(comparate: Float): Boolean {
-    //TODO: This could be more efficient if the double could broken down to int bits.
-    val epsilon = if (comparate > this) Math.ulp(comparate) * DEFAULT_MAX_ULPS else Math.ulp(this) * DEFAULT_MAX_ULPS
-
-    return feq(comparate, epsilon)
-}
+infix fun Float.feq(comparate: Float): Boolean = feq(comparate, DEFAULT_MAX_ULPS)

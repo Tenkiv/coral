@@ -41,3 +41,23 @@ inline fun <E> Collection<E>.findBooleanRatio(of: (E) -> Boolean, to: (E) -> Boo
     }
     return firstTotal / secondTotal
 }
+
+inline fun <E> Collection<E>.findRatioToTotal(of: (E) -> Double, other: (E) -> Double): Double {
+    var firstTotal = 0.0
+    var secondTotal = 0.0
+    forEach {
+        firstTotal += of(it)
+        secondTotal += other(it)
+    }
+    return firstTotal / (firstTotal + secondTotal)
+}
+
+inline fun <E> Collection<E>.findBooleanRatioToTotal(of: (E) -> Boolean, other: (E) -> Boolean): Double {
+    var firstTotal = 0
+    var secondTotal = 0.0
+    forEach {
+        if (of(it)) firstTotal++
+        if (other(it)) secondTotal++
+    }
+    return firstTotal / (firstTotal + secondTotal)
+}
