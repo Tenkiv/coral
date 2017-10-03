@@ -38,23 +38,48 @@ class FeqSpec : StringSpec({
     }
 
     "doubles should have equality approximated according to non-default max ULPs" {
-        //TODO
-        val first = 1_000_000_000.0001
-        val second = 1_000_000_000.0002
+        val first = 1_000_000_000.0000001
+        val second = 1_000_000_000.0000003
 
         first.feq(second, 1) shouldBe false
-        first.feq(second, 1) shouldBe true
+        first.feq(second, 2) shouldBe true
     }
 
     "floats should have equality approximated according to defaults" {
+        val equalFloats = listOf(
+                0.0f to 0.0f,
+                (0.15f + 0.15f) to (0.1f + 0.2f),
+                (1_000.0f / 100f) to 10.0f,
+                (100.5f - 100f) to 0.5f
+        )
 
+        forAll(equalFloats) {
+            it.first feq it.second shouldBe true
+        }
+
+        val notEqualFloats = listOf(
+                60_000f to 60_001f,
+                0.00000000002f to 0.00000000001f
+        )
+
+        forAll(notEqualFloats) {
+            it.first feq it.second shouldBe false
+        }
     }
 
     "floats should have equality approximated according to non-default epsilon" {
+        val first = 1_000.01f
+        val second = 1_000.02f
 
+        first.feq(second, 0.001f) shouldBe false
+        first.feq(second, 0.1f) shouldBe true
     }
 
     "floats should have equality approximated according to non-default max ULPs" {
+        val first = 1_000_000.0625f
+        val second = 1_000_000.19f
 
+        first.feq(second, 1) shouldBe false
+        first.feq(second, 2) shouldBe true
     }
 })

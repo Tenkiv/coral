@@ -5,4 +5,5 @@
 local.properties
 /build/
 /classes/
-/src/main/kotlin/org/tenkiv/coral/test.kt
+/src/main/kotlin/org/tenkiv/coral/Test.kt
+out/

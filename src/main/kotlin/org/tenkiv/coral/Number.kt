@@ -1,6 +1,7 @@
 package org.tenkiv.coral
 
-private const val DEFAULT_MAX_ULPS = 2_000
+private const val DEFAULT_DOUBLE_ULPS = 2_000
+private const val DEFAULT_FLOAT_ULPS = 200
 
 infix fun Double.pow(exponent: Double) = Math.pow(this, exponent)
 
@@ -13,7 +14,7 @@ fun Double.feq(comparate: Double, maxUlps: Int): Boolean {
     return feq(comparate, epsilon)
 }
 
-infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_MAX_ULPS)
+infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_DOUBLE_ULPS)
 
 fun Float.feq(comparate: Float, epsilon: Float): Boolean = Math.abs(this - comparate) <= epsilon
 
@@ -24,4 +25,4 @@ fun Float.feq(comparate: Float, maxUlps: Int): Boolean {
     return feq(comparate, epsilon)
 }
 
-infix fun Float.feq(comparate: Float): Boolean = feq(comparate, DEFAULT_MAX_ULPS)
+infix fun Float.feq(comparate: Float): Boolean = feq(comparate, DEFAULT_FLOAT_ULPS)
