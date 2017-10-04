@@ -5,6 +5,8 @@ import kotlin.concurrent.withLock
 import kotlin.reflect.KProperty
 
 
+private const val UNITIALIZED_MSG = "Attempted to access unimut property before it was set"
+
 /**
  * Creates a delegate for properties that you want to mutate / set exactly one time but may not have the necessary
  * information to do so at compile time.
@@ -12,8 +14,8 @@ import kotlin.reflect.KProperty
  * @param onSet is called after setting the backing field to the new value.
  * @param onGet is called before returning the value of the property.
  */
-fun <T : Any> unimut(concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyMode.PUBLICATION,
-                     onGet: ((T?) -> Unit)? = null,
+fun <T : Any> unimut(concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyMode.NONE,
+                     onGet: ((T) -> Unit)? = null,
                      onSet: ((T) -> Unit)? = null): UniMutDelegate<T> =
         when (concurrencyMode) {
             UniMutConcurrencyMode.BLOCKING -> BlockingUniMutDelegate(onSet, onGet)
@@ -49,16 +51,17 @@ enum class UniMutConcurrencyMode {
 }
 
 open class UniMutDelegate<T : Any> internal constructor(protected open var onSet: ((T) -> Unit)?,
-                                                        protected val onGet: ((T?) -> Unit)?) {
+                                                        protected val onGet: ((T) -> Unit)?) {
     open var value: T? = null
 
     /**
      * @throws UninitializedPropertyAccessException
      */
     open operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        onGet?.invoke(value)
+        onGet?.invoke(value ?:
+                throw UninitializedPropertyAccessException(UNITIALIZED_MSG))
         return value ?:
-                throw UninitializedPropertyAccessException("Attempted to access unimut property before it was set")
+                throw UninitializedPropertyAccessException(UNITIALIZED_MSG)
     }
 
     /**
@@ -75,13 +78,13 @@ open class UniMutDelegate<T : Any> internal constructor(protected open var onSet
 }
 
 private class PublicationSafeUnitMutDelegate<T : Any>(@Volatile override var onSet: ((T) -> Unit)?,
-                                                      onGet: ((T?) -> Unit)?) : UniMutDelegate<T>(onSet, onGet) {
+                                                      onGet: ((T) -> Unit)?) : UniMutDelegate<T>(onSet, onGet) {
     @Volatile override var value: T? = null
 }
 
 private class SynchronisedUniMutDelegate<T : Any>(
         onSet: ((T) -> Unit)?,
-        onGet: ((T?) -> Unit)?,
+        onGet: ((T) -> Unit)?,
         private val lock: ReadWriteLock = ReentrantReadWriteLock()) : UniMutDelegate<T>(onSet, onGet) {
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T =
@@ -93,7 +96,7 @@ private class SynchronisedUniMutDelegate<T : Any>(
 }
 
 private class BlockingUniMutDelegate<T : Any>(onSet: ((T) -> Unit)?,
-                                              onGet: ((T?) -> Unit)?,
+                                              onGet: ((T) -> Unit)?,
                                               private val lock: Lock = ReentrantLock()) :
         UniMutDelegate<T>(onSet, onGet) {
     var setCondition: Condition? = lock.newCondition()
@@ -101,11 +104,11 @@ private class BlockingUniMutDelegate<T : Any>(onSet: ((T) -> Unit)?,
     override fun getValue(thisRef: Any?, property: KProperty<*>): T =
             value ?: lock.withLock {
                 if (value != null) {
-                    onGet?.invoke(value)
+                    onGet?.invoke(value!!)
                     value!!
                 } else {
                     setCondition?.await()
-                    onGet?.invoke(value)
+                    onGet?.invoke(value!!)
                     value!!
                 }
             }
