@@ -1,6 +1,6 @@
 package org.tenkiv.coral
 
-
+//TODO Add an orNull variant of these functions which returns null instead of NaN when the collection is empty
 inline fun <E> Collection<E>.average(getValue: (E) -> Double): Double {
     var totalValue = 0.0
     forEach {
