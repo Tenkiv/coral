@@ -1,6 +1,6 @@
 package org.tenkiv.coral
 
-
+//TODO Add an orNull and orDefault variant of these functions.
 inline fun <E> Collection<E>.average(getValue: (E) -> Double): Double {
     var totalValue = 0.0
     forEach {

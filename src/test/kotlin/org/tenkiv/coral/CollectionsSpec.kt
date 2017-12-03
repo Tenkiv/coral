@@ -3,10 +3,15 @@ package org.tenkiv.coral
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 
+private val emptyCollection: List<Double> = emptyList()
 private val doubleCollection = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0)
 private val booleanCollection = listOf(true, false, true, false, true, false, true, false)
 
 class CollectionAverageSpec : StringSpec({
+
+    "average an empty collection" {
+        emptyCollection.average { it }.isNaN() shouldBe true
+    }
 
     "average of all elements in test collection should be 5.5" {
         doubleCollection.average { it }.feq(5.5, 0.000001) shouldBe true
