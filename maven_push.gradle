@@ -38,12 +38,20 @@ uploadArchives{
                 pom.artifactId = POM_ARTIFACT_ID
                 println(pom.artifactId)
 
-                repository(url: isRelease() ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : mavenLocal().url) {
-                    authentication(userName: project.findProperty('sonatype_user'), password: project.findProperty('sonatype_pass'))
+                repository(url: isRelease() ?
+                        "https://oss.sonatype.org/service/local/staging/deploy/maven2/" :
+                        mavenLocal().url) {
+                    authentication(
+                            userName: project.findProperty('sonatype_user'),
+                            password: project.findProperty('sonatype_pass'))
                 }
 
-                snapshotRepository(url: isRelease() ? "https://oss.sonatype.org/content/repositories/snapshots" : mavenLocal().url) {
-                    authentication(userName: project.findProperty('sonatype_user'), password: project.findProperty('sonatype_pass'))
+                snapshotRepository(url: isRelease() ?
+                        "https://oss.sonatype.org/content/repositories/snapshots" :
+                        mavenLocal().url) {
+                    authentication(
+                            userName: project.findProperty('sonatype_user'),
+                            password: project.findProperty('sonatype_pass'))
                 }
 
                 pom.project {
