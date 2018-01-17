@@ -23,5 +23,4 @@ interface ValueInstant<out T> {
 private data class BasicValueInstant<out T>(
     override val value: T,
     override val instant: Instant = Instant.now()
-) :
-    ValueInstant<T>
+) : ValueInstant<T>
