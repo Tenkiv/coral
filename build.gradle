@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.0'
+    ext.kotlin_version = '1.2.10'
 
     repositories {
         mavenCentral()
@@ -37,7 +37,7 @@ def isReleaseBuild() {
 apply from: 'maven_push.gradle'
 
 jacoco {
-    toolVersion = '0.7.9'
+    toolVersion = '0.8.0'
 }
 
 jacocoTestReport {
