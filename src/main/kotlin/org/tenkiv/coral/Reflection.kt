@@ -7,4 +7,4 @@ import kotlin.reflect.KClass
  * used to check an instance of the class against a type.
  */
 infix fun <T : Any, C : Any> KClass<T>.can(comparate: KClass<C>) =
-        comparate.java.isAssignableFrom(this.java)
+    comparate.java.isAssignableFrom(this.java)

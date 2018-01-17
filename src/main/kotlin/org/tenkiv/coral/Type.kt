@@ -16,10 +16,12 @@ interface ValueInstant<out T> {
 
     companion object {
         operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
-                BasicValueInstant(value, instant)
+            BasicValueInstant(value, instant)
     }
 }
 
-private data class BasicValueInstant<out T>(override val value: T,
-                                            override val instant: Instant = Instant.now()) :
-        ValueInstant<T>
+private data class BasicValueInstant<out T>(
+    override val value: T,
+    override val instant: Instant = Instant.now()
+) :
+    ValueInstant<T>
