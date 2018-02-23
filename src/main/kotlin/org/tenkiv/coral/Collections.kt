@@ -9,8 +9,7 @@ inline fun <E> Collection<E>.average(getValue: (E) -> Double): Double {
     return totalValue / size
 }
 
-inline fun <E> Collection<E>.average(getValue: (E) -> Double, condition: (E) -> Boolean):
-        Double {
+inline fun <E> Collection<E>.average(getValue: (E) -> Double, condition: (E) -> Boolean): Double {
     var totalValue = 0.0
     var totalElements = 0
     forEach {
