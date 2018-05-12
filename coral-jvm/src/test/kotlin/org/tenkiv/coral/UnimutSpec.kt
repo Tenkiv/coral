@@ -108,22 +108,22 @@ class UnimutSpec : StringSpec({
     "unimut property should initialise and read correctly" {
         val valueOne = "HELLO"
         var noSafety: String by unimut(UniMutConcurrencyMode.NONE,
-                onGet = {
-                    it shouldEqual valueOne
-                },
-                onSet = {
-                    it shouldEqual valueOne
-                })
+            onGet = {
+                it shouldEqual valueOne
+            },
+            onSet = {
+                it shouldEqual valueOne
+            })
         noSafety = valueOne
         noSafety shouldEqual valueOne
 
         var publication: String by unimut(UniMutConcurrencyMode.PUBLICATION,
-                onGet = {
-                    it shouldEqual valueOne
-                },
-                onSet = {
-                    it shouldEqual valueOne
-                })
+            onGet = {
+                it shouldEqual valueOne
+            },
+            onSet = {
+                it shouldEqual valueOne
+            })
 
         eventually(2.seconds) {
             thread(start = true) {
@@ -136,12 +136,12 @@ class UnimutSpec : StringSpec({
         }
 
         var synchronised: String by unimut(UniMutConcurrencyMode.SYNCHRONIZED,
-                onGet = {
-                    it shouldEqual valueOne
-                },
-                onSet = {
-                    it shouldEqual valueOne
-                })
+            onGet = {
+                it shouldEqual valueOne
+            },
+            onSet = {
+                it shouldEqual valueOne
+            })
 
         eventually(2.seconds) {
             thread(start = true) {
@@ -154,12 +154,12 @@ class UnimutSpec : StringSpec({
         }
 
         var blocking: String by unimut(UniMutConcurrencyMode.BLOCKING,
-                onGet = {
-                    it shouldEqual valueOne
-                },
-                onSet = {
-                    it shouldEqual valueOne
-                })
+            onGet = {
+                it shouldEqual valueOne
+            },
+            onSet = {
+                it shouldEqual valueOne
+            })
 
         eventually(2.seconds) {
             thread(start = true) {

@@ -1,1 +1,3 @@
 rootProject.name = 'coral'
+include 'coral-common'
+include 'coral-jvm'
