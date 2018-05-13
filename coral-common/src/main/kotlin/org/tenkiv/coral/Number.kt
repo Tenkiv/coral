@@ -1,5 +1,8 @@
+@file:JvmName("NumberCommon")
+
 package org.tenkiv.coral
 
+import kotlin.jvm.JvmName
 import kotlin.math.abs
 import kotlin.math.ulp
 

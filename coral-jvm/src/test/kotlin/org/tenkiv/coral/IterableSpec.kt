@@ -1,13 +1,13 @@
 package org.tenkiv.coral
 
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 private val emptyCollection: List<Double> = emptyList()
 private val doubleCollection = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0)
 private val booleanCollection = listOf(true, false, true, false, true, false, true, false)
 
-class CollectionAverageSpec : StringSpec({
+class IterableAverageSpec : StringSpec({
 
     "average an empty collection" {
         emptyCollection.average { it }.isNaN() shouldBe true
@@ -26,7 +26,7 @@ class CollectionAverageSpec : StringSpec({
 
 })
 
-class CollectionRatioSpec : StringSpec({
+class IterableRatioSpec : StringSpec({
 
     "ratio of sum of even doubles to odd doubles should be 1.2" {
         doubleCollection.findRatio(

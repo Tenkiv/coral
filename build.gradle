@@ -30,17 +30,21 @@ configure(project(':coral-jvm')) {
     compileKotlin.kotlinOptions.jvmTarget = "1.8"
     compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 
+    test {
+        useJUnitPlatform()
+    }
+
     dependencies {
         expectedBy project(':coral-common')
 
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+        testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.0'
         testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-        testCompile 'io.kotlintest:kotlintest:2.0.7'
     }
 
     jacoco {
-        toolVersion = '0.8.0'
+        toolVersion = '0.8.1'
     }
 
     jacocoTestReport {

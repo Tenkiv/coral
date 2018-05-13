@@ -1,11 +1,10 @@
 package org.tenkiv.coral
 
+
 import io.kotlintest.eventually
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.matchers.shouldEqual
-import io.kotlintest.matchers.shouldNotBe
-import io.kotlintest.matchers.shouldThrow
-import io.kotlintest.seconds
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
+import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.thread
@@ -32,7 +31,7 @@ class UnimutSpec : StringSpec({
 
         var publication: Int by unimut(UniMutConcurrencyMode.PUBLICATION)
 
-        eventually(2.seconds) {
+        eventually(2L.secondsSpan) {
             val exceptionLock = ReentrantLock()
             var firstSet = true
             var exception: AlreadySetException? = null
@@ -77,7 +76,7 @@ class UnimutSpec : StringSpec({
 
         var synchronized: Int by unimut(UniMutConcurrencyMode.SYNCHRONIZED)
 
-        eventually(2.seconds) {
+        eventually(2L.secondsSpan) {
             thread(start = true) {
                 synchronized = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
             }
@@ -91,7 +90,7 @@ class UnimutSpec : StringSpec({
 
         var blocking: Int by unimut(UniMutConcurrencyMode.BLOCKING)
 
-        eventually(2.seconds) {
+        eventually(2L.secondsSpan) {
             thread(start = true) {
                 blocking = 1 + 1
             }
@@ -109,61 +108,61 @@ class UnimutSpec : StringSpec({
         val valueOne = "HELLO"
         var noSafety: String by unimut(UniMutConcurrencyMode.NONE,
             onGet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             },
             onSet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             })
         noSafety = valueOne
-        noSafety shouldEqual valueOne
+        noSafety shouldBe valueOne
 
         var publication: String by unimut(UniMutConcurrencyMode.PUBLICATION,
             onGet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             },
             onSet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             })
 
-        eventually(2.seconds) {
+        eventually(2L.secondsSpan) {
             thread(start = true) {
                 publication = valueOne
             }
 
             thread(start = true) {
-                publication shouldEqual valueOne
+                publication shouldBe valueOne
             }
         }
 
         var synchronised: String by unimut(UniMutConcurrencyMode.SYNCHRONIZED,
             onGet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             },
             onSet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             })
 
-        eventually(2.seconds) {
+        eventually(2L.secondsSpan) {
             thread(start = true) {
                 synchronised = valueOne
             }
 
             thread(start = true) {
-                synchronised shouldEqual valueOne
+                synchronised shouldBe valueOne
             }
         }
 
         var blocking: String by unimut(UniMutConcurrencyMode.BLOCKING,
             onGet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             },
             onSet = {
-                it shouldEqual valueOne
+                it shouldBe valueOne
             })
 
-        eventually(2.seconds) {
+        eventually(2L.secondsSpan) {
             thread(start = true) {
-                blocking shouldEqual valueOne
+                blocking shouldBe valueOne
             }
 
             thread(start = true) {

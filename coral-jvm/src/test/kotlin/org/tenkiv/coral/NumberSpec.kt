@@ -1,7 +1,7 @@
 package org.tenkiv.coral
 
 import io.kotlintest.forAll
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class FeqSpec : StringSpec({
