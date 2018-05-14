@@ -10,6 +10,14 @@ buildscript {
 }
 
 subprojects {
+    apply plugin: 'idea'
+
+    idea {
+        module {
+            downloadJavadoc = true
+        }
+    }
+
     repositories {
         mavenCentral()
     }
