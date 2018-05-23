@@ -9,3 +9,4 @@ out/
 /coral-jvm/src/main/kotlin/org/tenkiv/coral/Test.kt
 /coral-common/build/
 /coral-jvm/build/
+*.log
