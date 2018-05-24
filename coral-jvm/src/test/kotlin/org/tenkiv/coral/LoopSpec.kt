@@ -9,9 +9,7 @@ class LoopSpec : StringSpec({
 
         loop {
             a++
-            if (a == 10) return@loop escape()
-
-            Unit
+            if (a == 10) escape()
         }
 
     }

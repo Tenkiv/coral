@@ -1,26 +1,25 @@
 package org.tenkiv.coral
 
-inline fun loop(block: LoopUtils.() -> Any?) {
+inline fun loop(block: LoopControl.() -> Unit) {
 
-    while (LoopUtils.instance.block() != LoopControl.BREAK)
-        continue
+    while (true)
+        try {
+            LoopControl.instance.block()
+        } catch (control: LoopControl.Break) {
+            break
+        }
 
 }
 
-enum class LoopControl {
-    CONTINUE,
-    BREAK
-}
+class LoopControl private constructor() {
 
-class LoopUtils private constructor() {
+    fun escape(): Nothing = throw Break
 
-    fun next() = LoopControl.CONTINUE
+    internal object Break : Throwable()
 
-    fun escape() = LoopControl.BREAK
-
-    @PublishedApi
-    internal companion object {
-        val instance = LoopUtils()
+    companion object {
+        @PublishedApi
+        internal val instance = LoopControl()
     }
 
 }
