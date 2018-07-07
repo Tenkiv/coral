@@ -26,7 +26,7 @@ inline fun <E> Iterable<E>.average(getValue: (E) -> Double, condition: (E) -> Bo
 /**
  * Result always given to 1. So, for example, 3 to 1 would return 3 and 1.5 to 0.5 would also return 3.
  */
-inline fun <E> Iterable<E>.findRatio(of: (E) -> Double, to: (E) -> Double): Double {
+inline fun <E> Iterable<E>.ratio(of: (E) -> Double, to: (E) -> Double): Double {
     var ofTotal = 0.0
     var toTotal = 0.0
     forEach {
@@ -44,7 +44,7 @@ inline fun <E> Iterable<E>.findRatio(of: (E) -> Double, to: (E) -> Double): Doub
 /**
  * Result always given to 1. So, for example, 3 to 1 would return 3 and 1.5 to 0.5 would also return 3.
  */
-inline fun <E> Iterable<E>.findBooleanRatio(of: (E) -> Boolean, to: (E) -> Boolean): Double {
+inline fun <E> Iterable<E>.booleanRatio(of: (E) -> Boolean, to: (E) -> Boolean): Double {
     var ofTotal = 0
     var toTotal = 0
     forEach {
@@ -59,7 +59,7 @@ inline fun <E> Iterable<E>.findBooleanRatio(of: (E) -> Boolean, to: (E) -> Boole
     }
 }
 
-inline fun <E> Collection<E>.findRatioToTotal(of: (E) -> Double, other: (E) -> Double): Double {
+inline fun <E> Collection<E>.ratioToTotal(of: (E) -> Double, other: (E) -> Double): Double {
     var ofTotal = 0.0
     var otherTotal = 0.0
     forEach {
@@ -70,7 +70,7 @@ inline fun <E> Collection<E>.findRatioToTotal(of: (E) -> Double, other: (E) -> D
     return if (total == 0.0) Double.NaN else ofTotal / total
 }
 
-inline fun <E> Collection<E>.findBooleanRatioToTotal(of: (E) -> Boolean, other: (E) -> Boolean): Double {
+inline fun <E> Collection<E>.booleanRatioToTotal(of: (E) -> Boolean, other: (E) -> Boolean): Double {
     var ofTotal = 0
     var otherTotal = 0.0
     forEach {
