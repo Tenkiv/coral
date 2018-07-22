@@ -1,17 +1,17 @@
 package org.tenkiv.coral
 
 import io.kotlintest.forAll
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class FeqSpec : StringSpec({
 
     "doubles should have equality approximated according to defaults" {
         val equalDoubles = listOf(
-                0.0 to 0.0,
-                (0.15 + 0.15) to (0.1 + 0.2),
-                (1_000.0 / 100) to 10.0,
-                (1_000.1 - 1_000) to 0.1
+            0.0 to 0.0,
+            (0.15 + 0.15) to (0.1 + 0.2),
+            (1_000.0 / 100) to 10.0,
+            (1_000.1 - 1_000) to 0.1
         )
 
         forAll(equalDoubles) {
@@ -19,8 +19,8 @@ class FeqSpec : StringSpec({
         }
 
         val notEqualDoubles = listOf(
-                1_000_000_000.0 to 1_000_000_000.001,
-                0.0000000000000000002 to 0.0000000000000000001
+            1_000_000_000.0 to 1_000_000_000.001,
+            0.0000000000000000002 to 0.0000000000000000001
         )
 
         forAll(notEqualDoubles) {
@@ -47,10 +47,10 @@ class FeqSpec : StringSpec({
 
     "floats should have equality approximated according to defaults" {
         val equalFloats = listOf(
-                0.0f to 0.0f,
-                (0.15f + 0.15f) to (0.1f + 0.2f),
-                (1_000.0f / 100f) to 10.0f,
-                (100.5f - 100f) to 0.5f
+            0.0f to 0.0f,
+            (0.15f + 0.15f) to (0.1f + 0.2f),
+            (1_000.0f / 100f) to 10.0f,
+            (100.5f - 100f) to 0.5f
         )
 
         forAll(equalFloats) {
@@ -58,8 +58,8 @@ class FeqSpec : StringSpec({
         }
 
         val notEqualFloats = listOf(
-                60_000f to 60_001f,
-                0.00000000002f to 0.00000000001f
+            60_000f to 60_001f,
+            0.00000000002f to 0.00000000001f
         )
 
         forAll(notEqualFloats) {
