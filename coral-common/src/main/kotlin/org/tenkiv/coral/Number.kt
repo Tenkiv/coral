@@ -20,3 +20,48 @@ fun Double.feq(comparate: Double, maxUlps: Int): Boolean {
 infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_DOUBLE_ULPS)
 
 fun Float.feq(comparate: Float, epsilon: Float): Boolean = abs(this - comparate) <= epsilon
+
+
+/**
+ * @return null if the number to be normalised is outside the range.
+ */
+infix fun Double.normalToOrNull(range: ClosedRange<Double>): Double? =
+    if (this in range) {
+        normalTo(range)
+    } else {
+        null
+    }
+
+/**
+ * Normalises the number to the given range.
+ */
+infix fun Double.normalTo(range: ClosedRange<Double>): Double {
+    val min = range.start
+    val max = range.endInclusive
+
+    return normalise(this, min, max)
+}
+
+private fun normalise(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
+
+/**
+ * @return null if the number to be normalised is outside the range.
+ */
+infix fun Float.normalToOrNull(range: ClosedRange<Float>): Float? =
+    if (this in range) {
+        normalTo(range)
+    } else {
+        null
+    }
+
+/**
+ * Normalises the number to the given range.
+ */
+infix fun Float.normalTo(range: ClosedRange<Float>): Float {
+    val min = range.start
+    val max = range.endInclusive
+
+    return normalise(this, min, max)
+}
+
+private fun normalise(number: Float, min: Float, max: Float): Float = (number - min) / (max - min)
