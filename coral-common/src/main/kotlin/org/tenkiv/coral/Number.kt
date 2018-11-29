@@ -38,24 +38,36 @@ infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_DOUBLE
 fun Float.feq(comparate: Float, epsilon: Float): Boolean = abs(this - comparate) <= epsilon
 
 
+private const val EXCEPTION_MSG = "The number being normalised is not in the specified range"
+
 /**
  * @return null if the number to be normalised is outside the range.
  */
-infix fun Double.normalToOrNull(range: ClosedRange<Double>): Double? =
-    if (this in range) {
-        normalTo(range)
+infix fun Double.normalToOrNull(range: ClosedRange<Double>): Double? {
+    val min = range.start
+    val max = range.endInclusive
+
+    return if (this in range) {
+        normalise(this, min, max)
     } else {
         null
     }
+}
 
 /**
+ * @throws [IllegalArgumentException] if the number is not in the given range.
+ *
  * Normalises the number to the given range.
  */
 infix fun Double.normalTo(range: ClosedRange<Double>): Double {
     val min = range.start
     val max = range.endInclusive
 
-    return normalise(this, min, max)
+    return if (this in range) {
+        normalise(this, min, max)
+    } else {
+        throw IllegalArgumentException(EXCEPTION_MSG)
+    }
 }
 
 private fun normalise(number: Double, min: Double, max: Double): Double = (number - min) / (max - min)
@@ -63,21 +75,31 @@ private fun normalise(number: Double, min: Double, max: Double): Double = (numbe
 /**
  * @return null if the number to be normalised is outside the range.
  */
-infix fun Float.normalToOrNull(range: ClosedRange<Float>): Float? =
-    if (this in range) {
-        normalTo(range)
+infix fun Float.normalToOrNull(range: ClosedRange<Float>): Float? {
+    val min = range.start
+    val max = range.endInclusive
+
+    return if (this in range) {
+        normalise(this, min, max)
     } else {
         null
     }
+}
 
 /**
+ * @throws [IllegalArgumentException] if the number is not in the given range.
+ *
  * Normalises the number to the given range.
  */
 infix fun Float.normalTo(range: ClosedRange<Float>): Float {
     val min = range.start
     val max = range.endInclusive
 
-    return normalise(this, min, max)
+    return if (this in range) {
+        normalise(this, min, max)
+    } else {
+        throw IllegalArgumentException(EXCEPTION_MSG)
+    }
 }
 
 private fun normalise(number: Float, min: Float, max: Float): Float = (number - min) / (max - min)
