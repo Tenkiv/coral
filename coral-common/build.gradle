@@ -1,6 +1,0 @@
-apply plugin: 'kotlin-platform-common'
-apply from: 'maven_push.gradle'
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
-}

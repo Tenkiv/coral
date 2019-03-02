@@ -14,13 +14,16 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.tenkiv.coral
 
-import kotlin.reflect.KClass
+import kotlin.math.ulp
 
-/**
- * Checks to see if one Kotlin type conforms to another. Will return the same result as if the 'is' operator were
- * used to check an instance of the class against a type.
- */
-infix fun <T : Any, C : Any> KClass<T>.can(comparate: KClass<C>) =
-    comparate.java.isAssignableFrom(this.java)
+private const val DEFAULT_FLOAT_ULPS = 200
+
+fun Float.feq(comparate: Float, maxUlps: Int): Boolean {
+    //TODO: This might be more efficient if the float could broken down to long bits.
+    val epsilon = if (comparate > this) comparate.ulp * maxUlps else this.ulp * maxUlps
+
+    return feq(comparate, epsilon)
+}
+
+infix fun Float.feq(comparate: Float): Boolean = feq(comparate, DEFAULT_FLOAT_ULPS)

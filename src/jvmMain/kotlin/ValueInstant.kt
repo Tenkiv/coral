@@ -14,38 +14,32 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.tenkiv.coral
 
-import java.time.Duration
 import java.time.Instant
-import java.time.temporal.TemporalAmount
 
-val Long.secondsSpan: Duration get() = Duration.ofSeconds(this)
 
-val Int.secondsSpan: Duration get() = Duration.ofSeconds(this.toLong())
+infix fun <T> T.at(instant: Instant): ValueInstant<T> = BasicValueInstant(this, instant)
 
-val Long.hoursSpan: Duration get() = Duration.ofHours(this)
+fun <T> T.now(): ValueInstant<T> = BasicValueInstant(this, Instant.now())
 
-val Int.hoursSpan: Duration get() = Duration.ofHours(this.toLong())
+fun <T> Iterable<ValueInstant<T>>.getDataInRange(instantRange: ClosedRange<Instant>): List<ValueInstant<T>> =
+    this.filter { it.instant in instantRange }
 
-val Long.daysSpan: Duration get() = Duration.ofDays(this)
+interface ValueInstant<out T> {
+    val value: T
+    val instant: Instant
 
-val Int.daysSpan: Duration get() = Duration.ofDays(this.toLong())
+    operator fun component1() = value
+    operator fun component2() = instant
 
-val Long.millisSpan: Duration get() = Duration.ofMillis(this)
+    companion object {
+        @Deprecated("Use at(Instant) function instead", ReplaceWith("at(Instant)"))
+        operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
+            BasicValueInstant(value, instant)
+    }
+}
 
-val Int.millisSpan: Duration get() = Duration.ofMillis(this.toLong())
-
-val Long.minutesSpan: Duration get() = Duration.ofMinutes(this)
-
-val Int.minutesSpan: Duration get() = Duration.ofMinutes(this.toLong())
-
-val Long.nanosSpan: Duration get() = Duration.ofNanos(this)
-
-val Int.nanosSpan: Duration get() = Duration.ofNanos(this.toLong())
-
-infix fun Instant.isOlderThan(age: TemporalAmount) =
-    this.isBefore(Instant.now() - age)
-
-fun Instant.isOlderThan(age: TemporalAmount, now: Instant) =
-    this.isBefore(now - age)
+private data class BasicValueInstant<out T>(
+    override val value: T,
+    override val instant: Instant = Instant.now()
+) : ValueInstant<T>
