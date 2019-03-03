@@ -15,18 +15,12 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import io.kotlintest.specs.StringSpec
+package org.tenkiv.coral
+import kotlin.reflect.KClass
 
-class LoopSpec : StringSpec({
-
-    "Loop should break when breakLoop() is called" {
-        var a = 0
-
-        loop {
-            a++
-            if (a == 10) breakLoop()
-        }
-
-    }
-
-})
+/**
+ * Checks to see if one Kotlin type conforms to another. Will return the same result as if the 'is' operator were
+ * used to check an instance of the class against a type.
+ */
+infix fun <T : Any, C : Any> KClass<T>.can(comparate: KClass<C>) =
+    comparate.java.isAssignableFrom(this.java)

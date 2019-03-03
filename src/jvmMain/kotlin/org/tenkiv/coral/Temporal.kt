@@ -14,16 +14,37 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.tenkiv.coral
+import java.time.Duration
+import java.time.Instant
+import java.time.temporal.TemporalAmount
 
-import kotlin.math.ulp
+val Long.secondsSpan: Duration get() = Duration.ofSeconds(this)
 
-private const val DEFAULT_FLOAT_ULPS = 200
+val Int.secondsSpan: Duration get() = Duration.ofSeconds(this.toLong())
 
-fun Float.feq(comparate: Float, maxUlps: Int): Boolean {
-    //TODO: This might be more efficient if the float could broken down to long bits.
-    val epsilon = if (comparate > this) comparate.ulp * maxUlps else this.ulp * maxUlps
+val Long.hoursSpan: Duration get() = Duration.ofHours(this)
 
-    return feq(comparate, epsilon)
-}
+val Int.hoursSpan: Duration get() = Duration.ofHours(this.toLong())
 
-infix fun Float.feq(comparate: Float): Boolean = feq(comparate, DEFAULT_FLOAT_ULPS)
+val Long.daysSpan: Duration get() = Duration.ofDays(this)
+
+val Int.daysSpan: Duration get() = Duration.ofDays(this.toLong())
+
+val Long.millisSpan: Duration get() = Duration.ofMillis(this)
+
+val Int.millisSpan: Duration get() = Duration.ofMillis(this.toLong())
+
+val Long.minutesSpan: Duration get() = Duration.ofMinutes(this)
+
+val Int.minutesSpan: Duration get() = Duration.ofMinutes(this.toLong())
+
+val Long.nanosSpan: Duration get() = Duration.ofNanos(this)
+
+val Int.nanosSpan: Duration get() = Duration.ofNanos(this.toLong())
+
+infix fun Instant.isOlderThan(age: TemporalAmount) =
+    this.isBefore(Instant.now() - age)
+
+fun Instant.isOlderThan(age: TemporalAmount, now: Instant) =
+    this.isBefore(now - age)

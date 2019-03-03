@@ -14,12 +14,33 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.tenkiv.coral
+import java.time.Instant
 
-import kotlin.reflect.KClass
 
-/**
- * Checks to see if one Kotlin type conforms to another. Will return the same result as if the 'is' operator were
- * used to check an instance of the class against a type.
- */
-infix fun <T : Any, C : Any> KClass<T>.can(comparate: KClass<C>) =
-    comparate.java.isAssignableFrom(this.java)
+infix fun <T> T.at(instant: Instant): ValueInstant<T> =
+    BasicValueInstant(this, instant)
+
+fun <T> T.now(): ValueInstant<T> = BasicValueInstant(this, Instant.now())
+
+fun <T> Iterable<ValueInstant<T>>.getDataInRange(instantRange: ClosedRange<Instant>): List<ValueInstant<T>> =
+    this.filter { it.instant in instantRange }
+
+interface ValueInstant<out T> {
+    val value: T
+    val instant: Instant
+
+    operator fun component1() = value
+    operator fun component2() = instant
+
+    companion object {
+        @Deprecated("Use at(Instant) function instead", ReplaceWith("at(Instant)"))
+        operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
+            BasicValueInstant(value, instant)
+    }
+}
+
+private data class BasicValueInstant<out T>(
+    override val value: T,
+    override val instant: Instant = Instant.now()
+) : ValueInstant<T>

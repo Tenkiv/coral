@@ -2,6 +2,7 @@ val kotlinVersion = "1.3.21"
 
 plugins {
     kotlin("multiplatform") version "1.3.21"
+    jacoco
 }
 
 buildscript {
@@ -26,7 +27,7 @@ kotlin {
             repositories {
                 mavenCentral()
             }
-            
+
             dependencies {
                 implementation(kotlin("stdlib-common"))
             }
@@ -39,8 +40,6 @@ kotlin {
         }
 
         val jvmMain by getting {
-            apply(plugin = "jacoco")
-
             dependencies {
                 dependsOn(commonMain)
                 implementation(kotlin("stdlib-jdk8"))
@@ -51,7 +50,7 @@ kotlin {
             repositories {
                 jcenter()
             }
-            
+
             dependencies {
                 implementation(kotlin("reflect", kotlinVersion))
                 implementation(kotlin("test", kotlinVersion))
@@ -68,8 +67,28 @@ kotlin {
                     because("Needed to run tests IDEs that bundle an older version")
                 }
             }
-            
-            
+
+            jacoco {
+                toolVersion = "0.8.2"
+            }
+
+            tasks {
+                val jacocoReport = withType<JacocoReport> {
+                    reports {
+                        html.isEnabled = true
+                        xml.isEnabled = true
+                        csv.isEnabled = false
+                    }
+                }
+                
+                withType<Test> {
+                    useJUnitPlatform {
+                        includeEngines("spek2")
+                    }
+
+                    finalizedBy(jacocoReport)
+                }
+            }
         }
     }
 }

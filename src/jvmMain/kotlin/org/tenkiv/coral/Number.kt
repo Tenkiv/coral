@@ -14,32 +14,16 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.tenkiv.coral
+import kotlin.math.ulp
 
-import java.time.Instant
+private const val DEFAULT_FLOAT_ULPS = 200
 
+fun Float.feq(comparate: Float, maxUlps: Int): Boolean {
+    //TODO: This might be more efficient if the float could broken down to long bits.
+    val epsilon = if (comparate > this) comparate.ulp * maxUlps else this.ulp * maxUlps
 
-infix fun <T> T.at(instant: Instant): ValueInstant<T> = BasicValueInstant(this, instant)
-
-fun <T> T.now(): ValueInstant<T> = BasicValueInstant(this, Instant.now())
-
-fun <T> Iterable<ValueInstant<T>>.getDataInRange(instantRange: ClosedRange<Instant>): List<ValueInstant<T>> =
-    this.filter { it.instant in instantRange }
-
-interface ValueInstant<out T> {
-    val value: T
-    val instant: Instant
-
-    operator fun component1() = value
-    operator fun component2() = instant
-
-    companion object {
-        @Deprecated("Use at(Instant) function instead", ReplaceWith("at(Instant)"))
-        operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
-            BasicValueInstant(value, instant)
-    }
+    return feq(comparate, epsilon)
 }
 
-private data class BasicValueInstant<out T>(
-    override val value: T,
-    override val instant: Instant = Instant.now()
-) : ValueInstant<T>
+infix fun Float.feq(comparate: Float): Boolean = feq(comparate, DEFAULT_FLOAT_ULPS)

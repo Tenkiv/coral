@@ -22,6 +22,8 @@ import kotlin.jvm.JvmName
 import kotlin.math.abs
 import kotlin.math.ulp
 
+public val testVal = true
+
 private const val DEFAULT_DOUBLE_ULPS = 2_000
 
 fun Double.feq(comparate: Double, epsilon: Double): Boolean = abs(this - comparate) <= epsilon
