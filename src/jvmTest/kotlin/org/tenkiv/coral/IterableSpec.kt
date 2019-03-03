@@ -15,60 +15,74 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.tenkiv.coral
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
 
-private val emptyCollection: List<Double> = emptyList()
-private val doubleCollection = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0)
-private val booleanCollection = listOf(true, false, true, false, true, false, true, false)
+import org.spekframework.spek2.*
+import org.spekframework.spek2.style.specification.*
+import kotlin.test.*
 
-class IterableAverageSpec : StringSpec({
+val emptyCollection: List<Double> = emptyList()
+val doubleCollection = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0)
+val booleanCollection = listOf(true, false, true, false, true, false, true, false)
 
-    "average an empty collection" {
-        emptyCollection.average { it }.isNaN() shouldBe true
+object IterableAverageSpec : Spek({
+
+    describe("calls average on an empty collection") {
+        it("returns true if empty collection is NaN") {
+            assertEquals(true, emptyCollection.average { it }.isNaN())
+        }
     }
 
-    "average of all elements in test collection should be 5.5" {
-        doubleCollection.average { it }.feq(5.5, 0.000001) shouldBe true
+    describe("calls average on a collection of doubles") {
+        it("returns true if averaged collection value is equal to a float of correct value") {
+            assertEquals(true, doubleCollection.average { it }.feq(5.5, 0.00001))
+        }
     }
 
-    "average of all even elements in test collection should be 6" {
-        doubleCollection.average(
-            getValue = { it },
-            condition = { it % 2.0 feq 0.0 }
-        ).feq(6.0, 0.000001) shouldBe true
+    describe("calls average on a collection of doubles with a condition") {
+        it("returns true if averaged collection value with given condition is equal to a float of the correct value") {
+            assertEquals(true, doubleCollection.average(
+                getValue = { it },
+                condition = { it % 2.0 feq 0.0 }
+            ).feq(6.0, 0.000001))
+        }
     }
-
 })
 
-class IterableRatioSpec : StringSpec({
+object IterableRatioSpec : Spek({
 
-    "ratio of sum of even doubles to odd doubles should be 1.2" {
-        doubleCollection.ratio(
-            of = { if (it % 2.0 feq 0.0) it else 0.0 },
-            to = { if (it % 2.0 feq 0.0) 0.0 else it }
-        ).feq(1.2, 0.000001) shouldBe true
+    describe("calls ratio on a collection of doubles") {
+        it("returns true if ratio of sun of even doubles to odd doubles is equal to a float of correct value") {
+            assertEquals(true, doubleCollection.ratio(
+                of = { if (it % 2.0 feq 0.0) it else 0.0 },
+                to = { if (it % 2.0 feq 0.0) 0.0 else it }
+            ).feq(1.2, 0.000001))
+        }
     }
 
-    "ratio of true to false should be 1" {
-        booleanCollection.booleanRatio(
-            of = { it },
-            to = { it }
-        ).feq(1.0, 0.000001) shouldBe true
+    describe("calls booleanRatio on a collection of booleans") {
+        it("returns true if ratio of true to false is equal to a float of the correct value") {
+            assertEquals(true, booleanCollection.booleanRatio(
+                of = { it },
+                to = { it }
+            ).feq(1.0, 0.000001))
+        }
     }
 
-    "ratio of sum of even doubles to total should be 0.5454" {
-        doubleCollection.ratioToTotal(
-            of = { if (it % 2.0 feq 0.0) it else 0.0 },
-            other = { if (it % 2.0 feq 0.0) 0.0 else it }
-        ).feq(0.545454545454545454, 0.0001) shouldBe true
+    describe("calls ratioToTotal on a collection of doubles") {
+        it("returns true if ratio of the sum of even doubles to total doubles is equal to a float of correct value") {
+            doubleCollection.ratioToTotal(
+                of = { if (it % 2.0 feq 0.0) it else 0.0 },
+                other = { if (it % 2.0 feq 0.0) 0.0 else it }
+            ).feq(0.545454545454545454, 0.0001)
+        }
     }
 
-    "ratio of true to total should be 0.5" {
-        booleanCollection.booleanRatioToTotal(
-            of = { it },
-            other = { it }
-        ).feq(0.5, 0.000001) shouldBe true
+    describe("calls booleanRatioToTotal on a collection of booleans") {
+        it("returns true if ratio of true to total booleans is equal to a float of the correct value") {
+            booleanCollection.booleanRatioToTotal(
+                of = { it },
+                other = { it }
+            ).feq(0.5, 0.000001)
+        }
     }
-
 })
