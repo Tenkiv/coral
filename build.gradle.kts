@@ -33,15 +33,11 @@ buildscript {
 }
 
 kotlin {
-    jvm("mainJvm") {
+    jvm("coralJvm") {
         val main by compilations.getting {
             kotlinOptions {
                 jvmTarget = "1.8"
             }
-        }
-
-        mavenPublication {
-
         }
     }
 
@@ -63,14 +59,14 @@ kotlin {
             }
         }
 
-        jvm().compilations["main"].defaultSourceSet {
+        jvm("coralJvm").compilations["main"].defaultSourceSet {
             dependencies {
                 dependsOn(commonMain)
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
 
-        jvm().compilations["test"].defaultSourceSet {
+        jvm("coralJvm").compilations["test"].defaultSourceSet {
             apply<JavaLibraryPlugin>()
 
             repositories {
@@ -137,7 +133,7 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven-coral-jvm") {
-            val mainJvm by getting {
+            val coralJvm by getting {
                 groupId = "org.tenkiv.coral"
                 artifactId = "coral-jvm"
                 version = project.version.toString()
