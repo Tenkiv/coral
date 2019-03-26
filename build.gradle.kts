@@ -22,6 +22,7 @@ plugins {
     jacoco
     `java-library`
     java
+    `maven-publish`
 }
 
 buildscript {
@@ -32,11 +33,15 @@ buildscript {
 }
 
 kotlin {
-    jvm {
+    jvm("mainJvm") {
         val main by compilations.getting {
             kotlinOptions {
                 jvmTarget = "1.8"
             }
+        }
+
+        mavenPublication {
+
         }
     }
 
@@ -58,14 +63,14 @@ kotlin {
             }
         }
 
-        val jvmMain by getting {
+        jvm().compilations["main"].defaultSourceSet {
             dependencies {
                 dependsOn(commonMain)
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
 
-        val jvmTest by getting {
+        jvm().compilations["test"].defaultSourceSet {
             apply<JavaLibraryPlugin>()
 
             repositories {
@@ -126,5 +131,51 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions.suppressWarnings = true
         kotlinOptions.jvmTarget = "1.8"
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven-coral-jvm") {
+            val mainJvm by getting {
+                groupId = "org.tenkiv.coral"
+                artifactId = "coral-jvm"
+                version = project.version.toString()
+
+                from(components["java"])
+
+                pom {
+                    name.set(project.name)
+                    description.set(Info.pomDescription)
+                    url.set(System.getenv("CI_PROJECT_URL"))
+                    licenses {
+                        license {
+                            name.set(Info.pomLicense)
+                            url.set(Info.pomLicenseUrl)
+                        }
+                    }
+                    organization {
+                        name.set(Info.pomOrg)
+                    }
+                    scm {
+                        connection.set(System.getenv("CI_REPOSITORY_URL"))
+                        url.set(System.getenv("CI_PROJECT_URL"))
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            // change URLs to point to your repos, e.g. http://my.org/repo
+            val releasesRepoUrl = uri(Info.sonatypeReleaseRepoUrl)
+            val snapshotsRepoUrl = uri(Info.sonatypeSnapshotRepoUrl)
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            credentials {
+                username = System.getenv("MAVEN_REPO_USER")
+                password = System.getenv("MAVEN_REPO_PASSWORD")
+            }
+        }
     }
 }
