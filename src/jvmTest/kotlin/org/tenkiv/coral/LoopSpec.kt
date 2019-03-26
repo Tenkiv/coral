@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Tenkiv, Inc.
+ * Copyright 2019 Tenkiv, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -15,18 +15,22 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.tenkiv.coral
-import io.kotlintest.specs.StringSpec
 
-class LoopSpec : StringSpec({
+import org.spekframework.spek2.*
+import org.spekframework.spek2.style.specification.*
+import kotlin.test.*
 
-    "Loop should break when breakLoop() is called" {
-        var a = 0
+object LoopSpec : Spek({
+    var a = 0
 
-        loop {
-            a++
-            if (a == 10) breakLoop()
+    describe("calls breakLoop from within a loop") {
+        it("fails with throwable if loop breaks") {
+            assertFails {
+                loop {
+                    a++
+                    if (a == 10) breakLoop()
+                }
+            }
         }
-
     }
-
 })

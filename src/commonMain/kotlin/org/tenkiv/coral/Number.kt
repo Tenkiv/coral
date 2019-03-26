@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Tenkiv, Inc.
+ * Copyright 2019 Tenkiv, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -21,8 +21,6 @@ package org.tenkiv.coral
 import kotlin.jvm.JvmName
 import kotlin.math.abs
 import kotlin.math.ulp
-
-public val testVal = true
 
 private const val DEFAULT_DOUBLE_ULPS = 2_000
 

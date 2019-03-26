@@ -1,19 +1,37 @@
-val kotlinVersion = "1.3.21"
+/*
+ * Copyright 2019 Tenkiv, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+import org.jetbrains.kotlin.gradle.tasks.*
 
 plugins {
-    kotlin("multiplatform") version "1.3.21"
+    kotlin("multiplatform") version Vof.kotlinVersion
     jacoco
+    `java-library`
+    java
 }
 
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
     }
 }
 
 kotlin {
-    jvm()
-    
     jvm {
         val main by compilations.getting {
             kotlinOptions {
@@ -26,6 +44,7 @@ kotlin {
         val commonMain by getting {
             repositories {
                 mavenCentral()
+                jcenter()
             }
 
             dependencies {
@@ -47,29 +66,31 @@ kotlin {
         }
 
         val jvmTest by getting {
+            apply<JavaLibraryPlugin>()
+
             repositories {
+                mavenCentral()
                 jcenter()
             }
 
             dependencies {
-                implementation(kotlin("reflect", kotlinVersion))
-                implementation(kotlin("test", kotlinVersion))
-                implementation("org.spekframework.spek2:spek-dsl-jvm:2.0.0") {
+                implementation(kotlin("reflect", Vof.kotlinVersion))
+                implementation(kotlin("test", Vof.kotlinVersion))
+
+                implementation("org.spekframework.spek2:spek-dsl-jvm:${Vof.spek}") {
                     exclude(group = "org.jetbrains.kotlin")
                 }
 
-                implementation("org.spekframework.spek2:spek-runner-junit5:2.0.0") {
+                implementation("org.spekframework.spek2:spek-runner-junit5:${Vof.spek}") {
                     exclude(group = "org.jetbrains.kotlin")
                     exclude(group = "org.junit.platform")
                 }
 
-                implementation("org.junit.platform:junit-platform-launcher:1.4.0") {
-                    because("Needed to run tests IDEs that bundle an older version")
-                }
+                implementation("org.junit.platform:junit-platform-launcher:${Vof.junitLauncher}")
             }
 
             jacoco {
-                toolVersion = "0.8.2"
+                toolVersion = Vof.jacocoTool
             }
 
             tasks {
@@ -80,8 +101,9 @@ kotlin {
                         csv.isEnabled = false
                     }
                 }
-                
-                withType<Test> {
+
+                withType(Test::class) {
+                    outputs.upToDateWhen { false }
                     useJUnitPlatform {
                         includeEngines("spek2")
                     }
@@ -90,5 +112,19 @@ kotlin {
                 }
             }
         }
+
+        all {
+            repositories {
+                jcenter()
+                mavenCentral()
+            }
+        }
+    }
+}
+
+tasks {
+    withType<KotlinCompile> {
+        kotlinOptions.suppressWarnings = true
+        kotlinOptions.jvmTarget = "1.8"
     }
 }

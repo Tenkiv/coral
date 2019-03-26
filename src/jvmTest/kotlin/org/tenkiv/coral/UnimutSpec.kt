@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Tenkiv, Inc.
+ * Copyright 2019 Tenkiv, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -16,176 +16,185 @@
  */
 
 package org.tenkiv.coral
-import io.kotlintest.eventually
-import io.kotlintest.shouldBe
-import io.kotlintest.shouldNotBe
-import io.kotlintest.shouldThrow
-import io.kotlintest.specs.StringSpec
-import org.tenkiv.coral.*
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.thread
-import kotlin.concurrent.withLock
 
-class UnimutSpec : StringSpec({
+import org.spekframework.spek2.*
+import org.spekframework.spek2.style.specification.*
+import kotlin.test.*
 
-    "unimut property should throw exception if accessed before initialized" {
-        var noSafety: Int by unimut(UniMutConcurrencyMode.NONE)
-        var blocking: Int by unimut(UniMutConcurrencyMode.BLOCKING)
+object UnimutSpec : Spek({
+    describe("unimut property should throw exception if accessed before initialized") {
+        val noSafety: Int by unimut(UniMutConcurrencyMode.NONE)
+        val blocking: Int by unimut(UniMutConcurrencyMode.BLOCKING)
+        //TODO: add blocking test
 
-        shouldThrow<UninitializedPropertyAccessException> { println(noSafety) }
-        thread(start = true) { println(blocking) }
+        it("") {
+            assertFailsWith(UninitializedPropertyAccessException::class) { println(noSafety) }
+        }
     }
 
-    "unimut property should throw exception if set multiple times" {
+    describe("unimut property should throw exception if set multiple times") {
         var noSafety: Int by unimut(UniMutConcurrencyMode.NONE)
 
-        shouldThrow<AlreadySetException> {
-            noSafety = 1
-            noSafety = 2
-            noSafety
-        }
-
-        var publication: Int by unimut(UniMutConcurrencyMode.PUBLICATION)
-
-        eventually(2L.secondsSpan) {
-            val exceptionLock = ReentrantLock()
-            var firstSet = true
-            var exception: AlreadySetException? = null
-
-            thread(start = true) {
-                try {
-                    publication = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 2
-                } catch (e: AlreadySetException) {
-                    exceptionLock.withLock {
-                        exception = e
-                    }
-                }
-                exceptionLock.withLock {
-                    if (firstSet) {
-                        exception shouldBe null
-                        firstSet = false
-                    } else
-                        exception shouldNotBe null
-                }
-            }
-            thread(start = true) {
-                try {
-                    publication = 2 + 2
-                } catch (e: AlreadySetException) {
-                    exceptionLock.withLock {
-                        exception = e
-                    }
-                }
-                exceptionLock.withLock {
-                    exceptionLock.withLock {
-                        if (firstSet) {
-                            exception shouldBe null
-                            firstSet = false
-                        } else
-                            exception shouldNotBe null
-                    }
-                }
-            }
-
-        }
-
-
-        var synchronized: Int by unimut(UniMutConcurrencyMode.SYNCHRONIZED)
-
-        eventually(2L.secondsSpan) {
-            thread(start = true) {
-                synchronized = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
-            }
-            thread(start = true) {
-                shouldThrow<AlreadySetException> {
-                    synchronized = 1
-                    synchronized
-                }
+        it("") {
+            assertFailsWith(AlreadySetException::class) {
+                noSafety = 1
+                noSafety = 2
+                noSafety
             }
         }
 
-        var blocking: Int by unimut(UniMutConcurrencyMode.BLOCKING)
+        //TODO: add Spek equivalent of KotlinTest 'eventually' tests when Spek 2.1 is released
+//        var publication: Int by unimut(UniMutConcurrencyMode.PUBLICATION)
 
-        eventually(2L.secondsSpan) {
-            thread(start = true) {
-                blocking = 1 + 1
-            }
-            thread(start = true) {
-                shouldThrow<AlreadySetException> {
-                    blocking = 2 + 1
-                    blocking
-                }
-            }
-        }
+//        eventually(2L.secondsSpan) {
+//            val exceptionLock = ReentrantLock()
+//            var firstSet = true
+//            var exception: AlreadySetException? = null
+//
+//            thread(start = true) {
+//                try {
+//                    publication = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 2
+//                } catch (e: AlreadySetException) {
+//                    exceptionLock.withLock {
+//                        exception = e
+//                    }
+//                }
+//                exceptionLock.withLock {
+//                    if (firstSet) {
+//                        exception shouldBe null
+//                        firstSet = false
+//                    } else
+//                        exception shouldNotBe null
+//                }
+//            }
+//            thread(start = true) {
+//                try {
+//                    publication = 2 + 2
+//                } catch (e: AlreadySetException) {
+//                    exceptionLock.withLock {
+//                        exception = e
+//                    }
+//                }
+//                exceptionLock.withLock {
+//                    exceptionLock.withLock {
+//                        if (firstSet) {
+//                            exception shouldBe null
+//                            firstSet = false
+//                        } else
+//                            exception shouldNotBe null
+//                    }
+//                }
+//            }
+//
+//        }
+
+//        var synchronized: Int by unimut(UniMutConcurrencyMode.SYNCHRONIZED)
+//
+//        eventually(2L.secondsSpan) {
+//            thread(start = true) {
+//                synchronized = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+//            }
+//            thread(start = true) {
+//                shouldThrow<AlreadySetException> {
+//                    synchronized = 1
+//                    synchronized
+//                }
+//            }
+//        }
+//
+//        var blocking: Int by unimut(UniMutConcurrencyMode.BLOCKING)
+//
+//        eventually(2L.secondsSpan) {
+//            thread(start = true) {
+//                blocking = 1 + 1
+//            }
+//            thread(start = true) {
+//                shouldThrow<AlreadySetException> {
+//                    blocking = 2 + 1
+//                    blocking
+//                }
+//            }
+//        }
 
     }
 
-    "unimut property should initialise and read correctly" {
+    describe("unimut property should initialise and read correctly") {
         val valueOne = "HELLO"
-        var noSafety: String by unimut(UniMutConcurrencyMode.NONE,
-            onGet = {
-                it shouldBe valueOne
-            },
-            onSet = {
-                it shouldBe valueOne
-            })
-        noSafety = valueOne
-        noSafety shouldBe valueOne
 
-        var publication: String by unimut(UniMutConcurrencyMode.PUBLICATION,
-            onGet = {
-                it shouldBe valueOne
-            },
-            onSet = {
-                it shouldBe valueOne
-            })
+        it("") {
+            var noSafety: String by unimut(UniMutConcurrencyMode.NONE,
+                onGet = {
+                    assertEquals(valueOne, it)
+                },
+                onSet = {
+                    assertEquals(valueOne, it)
+                })
 
-        eventually(2L.secondsSpan) {
-            thread(start = true) {
-                publication = valueOne
-            }
-
-            thread(start = true) {
-                publication shouldBe valueOne
-            }
+            noSafety = valueOne
+            assertEquals(valueOne, noSafety)
         }
 
-        var synchronised: String by unimut(UniMutConcurrencyMode.SYNCHRONIZED,
-            onGet = {
-                it shouldBe valueOne
-            },
-            onSet = {
-                it shouldBe valueOne
-            })
+        it("") {
+            var publication: String by unimut(UniMutConcurrencyMode.PUBLICATION,
+                onGet = {
+                    assertEquals(valueOne, it)
+                },
+                onSet = {
+                    assertEquals(valueOne, it)
+                })
 
-        eventually(2L.secondsSpan) {
-            thread(start = true) {
-                synchronised = valueOne
-            }
-
-            thread(start = true) {
-                synchronised shouldBe valueOne
-            }
+            //TODO: add Spek equivalent of KotlinTest 'eventually' tests when Spek 2.1 is released
+//            eventually(2L.secondsSpan) {
+//                thread(start = true) {
+//                    publication = valueOne
+//                }
+//
+//                thread(start = true) {
+//                    publication shouldBe valueOne
+//                }
+//            }
         }
 
-        var blocking: String by unimut(UniMutConcurrencyMode.BLOCKING,
-            onGet = {
-                it shouldBe valueOne
-            },
-            onSet = {
-                it shouldBe valueOne
-            })
+        it("") {
+            var synchronised: String by unimut(UniMutConcurrencyMode.SYNCHRONIZED,
+                onGet = {
+                    assertEquals(valueOne, it)
+                },
+                onSet = {
+                    assertEquals(valueOne, it)
+                })
+            //TODO: add Spek equivalent of KotlinTest 'eventually' tests when Spek 2.1 is released
+//            eventually(2L.secondsSpan) {
+//                thread(start = true) {
+//                    synchronised = valueOne
+//                }
+//
+//                thread(start = true) {
+//                    synchronised shouldBe valueOne
+//                }
+//            }
+        }
 
-        eventually(2L.secondsSpan) {
-            thread(start = true) {
-                blocking shouldBe valueOne
-            }
+        it("") {
+            var blocking: String by unimut(UniMutConcurrencyMode.BLOCKING,
+                onGet = {
+                    assertEquals(valueOne, it)
+                },
+                onSet = {
+                    assertEquals(valueOne, it)
+                })
 
-            thread(start = true) {
-                Thread.sleep(1000)
-                blocking = valueOne
-            }
+            //TODO: add Spek equivalent of KotlinTest 'eventually' tests when Spek 2.1 is released
+//            eventually(2L.secondsSpan) {
+//                thread(start = true) {
+//                    blocking shouldBe valueOne
+//                }
+//
+//                thread(start = true) {
+//                    Thread.sleep(1000)
+//                    blocking = valueOne
+//                }
+//            }
         }
     }
-
 })

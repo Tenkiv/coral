@@ -14,49 +14,11 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.tenkiv.coral
 
-import kotlin.jvm.JvmField
-
-inline fun loop(block: LoopControl.() -> Unit) {
-
-    while (true)
-        try {
-            LoopControl.instance.block()
-        } catch (control: LoopControl.Break) {
-            break
-        }
-
-}
-
-inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
-    for (element in this)
-        try {
-            LoopControl.instance.operation(element)
-        } catch (control: LoopControl.Break) {
-            break
-        }
-}
-
-inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
-    for (element in this)
-        try {
-            LoopControl.instance.operation(element)
-        } catch (control: LoopControl.Break) {
-            break
-        }
-}
-
-class LoopControl private constructor() {
-
-    fun breakLoop(): Nothing = throw Break
-
-    internal object Break : Throwable()
-
-    companion object {
-        @PublishedApi
-        @JvmField
-        internal val instance = LoopControl()
-    }
-
+object Vof {
+    const val kotlinVersion = "1.3.21"
+    const val spek = "2.0.1"
+    const val junitLauncher = "1.4.0"
+    const val jacocoTool = "0.8.2"
+    const val dokka = "0.9.17"
 }
