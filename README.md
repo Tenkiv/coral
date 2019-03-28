@@ -1,7 +1,9 @@
-# Coral
-Some added niceties for Kotlin with JDK target. Coral is meant as a common set of low level abstractions required in many of our Kotlin projects at Tenkiv.
+# Coral &nbsp;[![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Matrix](https://img.shields.io/badge/chat-matrix-green.svg)](https://matrix.to/#/!zNBZBfPOrFpuWSwlFw:matrix.org?via=matrix.org)
+Coral is a common set of kotlin stdlib and platform stdlib extensions used in many of our Kotlin projects at Tenkiv.
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral.jdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral.jdk/core) [![Build Status](https://travis-ci.org/Tenkiv/Coral-JDK.svg?branch=master)](https://travis-ci.org/Tenkiv/Coral-JDK) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/81c4f4efb6c740f1a780dd75ca4e8d17)](https://www.codacy.com/app/Tenkiv/Coral-JDK?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Tenkiv/Coral-JDK&amp;utm_campaign=Badge_Grade)
+ | | |
+ :-----: | :-----:
+ JVM | placeholder
 
 Current features:
 * `unimut()` delegate that initialises a variable to null then allows to be set exactly once at any time.
