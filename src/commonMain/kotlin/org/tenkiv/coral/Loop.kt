@@ -18,6 +18,7 @@ package org.tenkiv.coral
 
 import kotlin.jvm.JvmField
 
+@CoralExpiremental
 inline fun loop(block: LoopControl.() -> Unit) {
 
     while (true)
@@ -29,6 +30,7 @@ inline fun loop(block: LoopControl.() -> Unit) {
 
 }
 
+@CoralExpiremental
 inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
     for (element in this)
         try {
@@ -38,6 +40,7 @@ inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
         }
 }
 
+@CoralExpiremental
 inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
     for (element in this)
         try {
@@ -47,8 +50,10 @@ inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
         }
 }
 
+@CoralExpiremental
 class LoopControl private constructor() {
 
+    @CoralExpiremental
     fun breakLoop(): Nothing = throw Break
 
     internal object Break : Throwable()
