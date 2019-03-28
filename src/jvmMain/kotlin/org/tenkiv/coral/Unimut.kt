@@ -97,8 +97,9 @@ public open class UniMutDelegate<T : Any> internal constructor(
             this.value = value
             onSet?.invoke(value)
             onSet = null
-        } else
+        } else {
             throw AlreadySetException("Attempted to set a unimut property that was already set.")
+        }
 
 }
 
