@@ -13,14 +13,16 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 package org.tenkiv.coral
 
 import org.spekframework.spek2.*
 import org.spekframework.spek2.style.specification.*
 import kotlin.test.*
 
-object FeqSpec : Spek ({
+object FeqSpec : Spek({
     describe("doubles should have equality approximated according to defaults") {
         val equalDoubles = listOf(
             0.0 to 0.0,
@@ -29,8 +31,10 @@ object FeqSpec : Spek ({
             (1_000.1 - 1_000) to 0.1
         )
 
-        it("returns true if first double of every pair in a list of double pairs is equal to a float of the correct " +
-                "value of the second double") {
+        it(
+            "returns true if first double of every pair in a list of double pairs is equal to a float of the correct " +
+                    "value of the second double"
+        ) {
             equalDoubles.forEach {
                 assertEquals(true, it.first feq it.second)
             }
@@ -41,8 +45,10 @@ object FeqSpec : Spek ({
             0.0000000000000000002 to 0.0000000000000000001
         )
 
-        it("returns false if the first double of every pair in a list of double pairs is not equal to a float" +
-                "of the correct value of the second double") {
+        it(
+            "returns false if the first double of every pair in a list of double pairs is not equal to a float" +
+                    "of the correct value of the second double"
+        ) {
             notEqualDoubles.forEach {
                 assertEquals(false, it.first feq it.second)
             }
@@ -83,8 +89,10 @@ object FeqSpec : Spek ({
             (100.5f - 100f) to 0.5f
         )
 
-        it("returns true if first float of every pair in a list of float pairs is equal to a float of the correct " +
-                "value of the second float") {
+        it(
+            "returns true if first float of every pair in a list of float pairs is equal to a float of the correct " +
+                    "value of the second float"
+        ) {
             equalFloats.forEach {
                 assertEquals(true, it.first feq it.second)
             }
@@ -95,8 +103,10 @@ object FeqSpec : Spek ({
             0.00000000002f to 0.00000000001f
         )
 
-        it("returns false if the first float of every pair in a list of float pairs is not equal to a float" +
-                "of the correct value of the second float") {
+        it(
+            "returns false if the first float of every pair in a list of float pairs is not equal to a float" +
+                    "of the correct value of the second float"
+        ) {
             notEqualFloats.forEach {
                 assertEquals(true, it.first feq it.second)
             }

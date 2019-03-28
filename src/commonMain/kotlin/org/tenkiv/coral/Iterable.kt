@@ -13,11 +13,13 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 package org.tenkiv.coral
 
 //TODO Add an orNull and orDefault variant of these functions.
-inline fun <E> Iterable<E>.average(getValue: (E) -> Double): Double {
+public inline fun <E> Iterable<E>.average(getValue: (E) -> Double): Double {
     var totalValue = 0.0
     var count = 0
     forEach {
@@ -27,7 +29,7 @@ inline fun <E> Iterable<E>.average(getValue: (E) -> Double): Double {
     return if (count == 0) Double.NaN else totalValue / count
 }
 
-inline fun <E> Iterable<E>.average(getValue: (E) -> Double, condition: (E) -> Boolean): Double {
+public inline fun <E> Iterable<E>.average(getValue: (E) -> Double, condition: (E) -> Boolean): Double {
     var totalValue = 0.0
     var count = 0
     forEach {
@@ -42,7 +44,7 @@ inline fun <E> Iterable<E>.average(getValue: (E) -> Double, condition: (E) -> Bo
 /**
  * Result always given to 1. So, for example, 3 to 1 would return 3 and 1.5 to 0.5 would also return 3.
  */
-inline fun <E> Iterable<E>.ratio(of: (E) -> Double, to: (E) -> Double): Double {
+public inline fun <E> Iterable<E>.ratio(of: (E) -> Double, to: (E) -> Double): Double {
     var ofTotal = 0.0
     var toTotal = 0.0
     forEach {
@@ -60,7 +62,7 @@ inline fun <E> Iterable<E>.ratio(of: (E) -> Double, to: (E) -> Double): Double {
 /**
  * Result always given to 1. So, for example, 3 to 1 would return 3 and 1.5 to 0.5 would also return 3.
  */
-inline fun <E> Iterable<E>.booleanRatio(of: (E) -> Boolean, to: (E) -> Boolean): Double {
+public inline fun <E> Iterable<E>.booleanRatio(of: (E) -> Boolean, to: (E) -> Boolean): Double {
     var ofTotal = 0
     var toTotal = 0
     forEach {
@@ -75,7 +77,7 @@ inline fun <E> Iterable<E>.booleanRatio(of: (E) -> Boolean, to: (E) -> Boolean):
     }
 }
 
-inline fun <E> Collection<E>.ratioToTotal(of: (E) -> Double, other: (E) -> Double): Double {
+public inline fun <E> Collection<E>.ratioToTotal(of: (E) -> Double, other: (E) -> Double): Double {
     var ofTotal = 0.0
     var otherTotal = 0.0
     forEach {
@@ -86,7 +88,7 @@ inline fun <E> Collection<E>.ratioToTotal(of: (E) -> Double, other: (E) -> Doubl
     return if (total == 0.0) Double.NaN else ofTotal / total
 }
 
-inline fun <E> Collection<E>.booleanRatioToTotal(of: (E) -> Boolean, other: (E) -> Boolean): Double {
+public inline fun <E> Collection<E>.booleanRatioToTotal(of: (E) -> Boolean, other: (E) -> Boolean): Double {
     var ofTotal = 0
     var otherTotal = 0.0
     forEach {

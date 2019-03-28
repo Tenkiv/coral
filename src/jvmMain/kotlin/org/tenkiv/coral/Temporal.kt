@@ -13,38 +13,40 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 package org.tenkiv.coral
-import java.time.Duration
-import java.time.Instant
-import java.time.temporal.TemporalAmount
 
-val Long.secondsSpan: Duration get() = Duration.ofSeconds(this)
+import java.time.*
+import java.time.temporal.*
 
-val Int.secondsSpan: Duration get() = Duration.ofSeconds(this.toLong())
+public val Long.secondsSpan: Duration get() = Duration.ofSeconds(this)
 
-val Long.hoursSpan: Duration get() = Duration.ofHours(this)
+public val Int.secondsSpan: Duration get() = Duration.ofSeconds(this.toLong())
 
-val Int.hoursSpan: Duration get() = Duration.ofHours(this.toLong())
+public val Long.hoursSpan: Duration get() = Duration.ofHours(this)
 
-val Long.daysSpan: Duration get() = Duration.ofDays(this)
+public val Int.hoursSpan: Duration get() = Duration.ofHours(this.toLong())
 
-val Int.daysSpan: Duration get() = Duration.ofDays(this.toLong())
+public val Long.daysSpan: Duration get() = Duration.ofDays(this)
 
-val Long.millisSpan: Duration get() = Duration.ofMillis(this)
+public val Int.daysSpan: Duration get() = Duration.ofDays(this.toLong())
 
-val Int.millisSpan: Duration get() = Duration.ofMillis(this.toLong())
+public val Long.millisSpan: Duration get() = Duration.ofMillis(this)
 
-val Long.minutesSpan: Duration get() = Duration.ofMinutes(this)
+public val Int.millisSpan: Duration get() = Duration.ofMillis(this.toLong())
 
-val Int.minutesSpan: Duration get() = Duration.ofMinutes(this.toLong())
+public val Long.minutesSpan: Duration get() = Duration.ofMinutes(this)
 
-val Long.nanosSpan: Duration get() = Duration.ofNanos(this)
+public val Int.minutesSpan: Duration get() = Duration.ofMinutes(this.toLong())
 
-val Int.nanosSpan: Duration get() = Duration.ofNanos(this.toLong())
+public val Long.nanosSpan: Duration get() = Duration.ofNanos(this)
 
-infix fun Instant.isOlderThan(age: TemporalAmount) =
+public val Int.nanosSpan: Duration get() = Duration.ofNanos(this.toLong())
+
+public infix fun Instant.isOlderThan(age: TemporalAmount) =
     this.isBefore(Instant.now() - age)
 
-fun Instant.isOlderThan(age: TemporalAmount, now: Instant) =
+public fun Instant.isOlderThan(age: TemporalAmount, now: Instant) =
     this.isBefore(now - age)

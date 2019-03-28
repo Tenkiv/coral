@@ -13,13 +13,15 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 package org.tenkiv.coral
 
-import kotlin.jvm.JvmField
+import kotlin.jvm.*
 
 @CoralExpiremental
-inline fun loop(block: LoopControl.() -> Unit) {
+public inline fun loop(block: LoopControl.() -> Unit) {
 
     while (true)
         try {
@@ -31,7 +33,7 @@ inline fun loop(block: LoopControl.() -> Unit) {
 }
 
 @CoralExpiremental
-inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
+public inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
     for (element in this)
         try {
             LoopControl.instance.operation(element)
@@ -41,7 +43,7 @@ inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
 }
 
 @CoralExpiremental
-inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
+public inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
     for (element in this)
         try {
             LoopControl.instance.operation(element)
@@ -51,10 +53,10 @@ inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
 }
 
 @CoralExpiremental
-class LoopControl private constructor() {
+public class LoopControl private constructor() {
 
     @CoralExpiremental
-    fun breakLoop(): Nothing = throw Break
+    public fun breakLoop(): Nothing = throw Break
 
     internal object Break : Throwable()
 

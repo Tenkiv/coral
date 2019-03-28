@@ -13,11 +13,14 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 package org.tenkiv.coral
+
 import java.util.concurrent.locks.*
-import kotlin.concurrent.withLock
-import kotlin.reflect.KProperty
+import kotlin.concurrent.*
+import kotlin.reflect.*
 
 
 private const val UNITIALIZED_MSG = "Attempted to access unimut property before it was set"
@@ -29,7 +32,7 @@ private const val UNITIALIZED_MSG = "Attempted to access unimut property before 
  * @param onSet is called after setting the backing field to the new value.
  * @param onGet is called before returning the value of the property.
  */
-fun <T : Any> unimut(
+public fun <T : Any> unimut(
     concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyMode.NONE,
     onGet: ((T) -> Unit)? = null,
     onSet: ((T) -> Unit)? = null
@@ -45,7 +48,7 @@ fun <T : Any> unimut(
  * Creates a Synchronised unimut and allows use of a custom ReadWriteLock. This is only recommended for advanced users
  * who have a specific reason for wanting to do this.
  */
-fun <T : Any> unimut(
+public fun <T : Any> unimut(
     lock: ReadWriteLock,
     onGet: ((T?) -> Unit)? = null,
     onSet: ((T) -> Unit)? = null
@@ -55,13 +58,13 @@ fun <T : Any> unimut(
  * Creates a Blocking unimut and allows use of a custom Lock. This is only recommended for advanced users
  * who have a specific reason for wanting to do this.
  */
-fun <T : Any> unimut(
+public fun <T : Any> unimut(
     lock: Lock,
     onGet: ((T?) -> Unit)? = null,
     onSet: ((T) -> Unit)? = null
 ): UniMutDelegate<T> = BlockingUniMutDelegate(onSet, onGet, lock)
 
-enum class UniMutConcurrencyMode {
+public enum class UniMutConcurrencyMode {
     /**
      * Blocks the thread attempting to get the property until the property is set.
      */
@@ -71,16 +74,16 @@ enum class UniMutConcurrencyMode {
     NONE
 }
 
-open class UniMutDelegate<T : Any> internal constructor(
+public open class UniMutDelegate<T : Any> internal constructor(
     protected open var onSet: ((T) -> Unit)?,
     protected val onGet: ((T) -> Unit)?
 ) {
-    open var value: T? = null
+    public open var value: T? = null
 
     /**
      * @throws UninitializedPropertyAccessException
      */
-    open operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+    public open operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         onGet?.invoke(
             value ?: throw UninitializedPropertyAccessException(UNITIALIZED_MSG)
         )
@@ -90,7 +93,7 @@ open class UniMutDelegate<T : Any> internal constructor(
     /**
      * @throws AlreadySetException
      */
-    open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
+    public open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
         if (this.value == null) {
             this.value = value
             onSet?.invoke(value)
@@ -151,9 +154,9 @@ private class BlockingUniMutDelegate<T : Any>(
 
 }
 
-class AlreadySetException : UnsupportedOperationException {
-    constructor() : super()
-    constructor(message: String) : super(message)
-    constructor(cause: Throwable) : super(cause)
-    constructor(message: String, cause: Throwable) : super(message, cause)
+public class AlreadySetException : UnsupportedOperationException {
+    public constructor() : super()
+    public constructor(message: String) : super(message)
+    public constructor(cause: Throwable) : super(cause)
+    public constructor(message: String, cause: Throwable) : super(message, cause)
 }

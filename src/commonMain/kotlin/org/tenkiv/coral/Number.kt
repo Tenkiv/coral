@@ -13,29 +13,30 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 @file:JvmName("NumberCommon")
 
 package org.tenkiv.coral
 
-import kotlin.jvm.JvmName
-import kotlin.math.abs
-import kotlin.math.ulp
+import kotlin.jvm.*
+import kotlin.math.*
 
 private const val DEFAULT_DOUBLE_ULPS = 2_000
 
-fun Double.feq(comparate: Double, epsilon: Double): Boolean = abs(this - comparate) <= epsilon
+public fun Double.feq(comparate: Double, epsilon: Double): Boolean = abs(this - comparate) <= epsilon
 
-fun Double.feq(comparate: Double, maxUlps: Int): Boolean {
+public fun Double.feq(comparate: Double, maxUlps: Int): Boolean {
     //TODO: This might be more efficient if the double could broken down to long bits.
     val epsilon = if (comparate > this) comparate.ulp * maxUlps else this.ulp * maxUlps
 
     return feq(comparate, epsilon)
 }
 
-infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_DOUBLE_ULPS)
+public infix fun Double.feq(comparate: Double): Boolean = feq(comparate, DEFAULT_DOUBLE_ULPS)
 
-fun Float.feq(comparate: Float, epsilon: Float): Boolean = abs(this - comparate) <= epsilon
+public fun Float.feq(comparate: Float, epsilon: Float): Boolean = abs(this - comparate) <= epsilon
 
 
 private const val EXCEPTION_MSG = "The number being normalised is not in the specified range"
@@ -43,7 +44,7 @@ private const val EXCEPTION_MSG = "The number being normalised is not in the spe
 /**
  * @return null if the number to be normalised is outside the range.
  */
-infix fun Double.normalToOrNull(range: ClosedRange<Double>): Double? {
+public infix fun Double.normalToOrNull(range: ClosedRange<Double>): Double? {
     val min = range.start
     val max = range.endInclusive
 
@@ -59,7 +60,7 @@ infix fun Double.normalToOrNull(range: ClosedRange<Double>): Double? {
  *
  * Normalises the number to the given range.
  */
-infix fun Double.normalTo(range: ClosedRange<Double>): Double {
+public infix fun Double.normalTo(range: ClosedRange<Double>): Double {
     val min = range.start
     val max = range.endInclusive
 
@@ -75,7 +76,7 @@ private fun normalise(number: Double, min: Double, max: Double): Double = (numbe
 /**
  * @return null if the number to be normalised is outside the range.
  */
-infix fun Float.normalToOrNull(range: ClosedRange<Float>): Float? {
+public infix fun Float.normalToOrNull(range: ClosedRange<Float>): Float? {
     val min = range.start
     val max = range.endInclusive
 
@@ -91,7 +92,7 @@ infix fun Float.normalToOrNull(range: ClosedRange<Float>): Float? {
  *
  * Normalises the number to the given range.
  */
-infix fun Float.normalTo(range: ClosedRange<Float>): Float {
+public infix fun Float.normalTo(range: ClosedRange<Float>): Float {
     val min = range.start
     val max = range.endInclusive
 

@@ -13,29 +13,32 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
 package org.tenkiv.coral
-import java.time.Instant
+
+import java.time.*
 
 
-infix fun <T> T.at(instant: Instant): ValueInstant<T> =
+public infix fun <T> T.at(instant: Instant): ValueInstant<T> =
     BasicValueInstant(this, instant)
 
-fun <T> T.now(): ValueInstant<T> = BasicValueInstant(this, Instant.now())
+public fun <T> T.now(): ValueInstant<T> = BasicValueInstant(this, Instant.now())
 
-fun <T> Iterable<ValueInstant<T>>.getDataInRange(instantRange: ClosedRange<Instant>): List<ValueInstant<T>> =
+public fun <T> Iterable<ValueInstant<T>>.getDataInRange(instantRange: ClosedRange<Instant>): List<ValueInstant<T>> =
     this.filter { it.instant in instantRange }
 
-interface ValueInstant<out T> {
-    val value: T
-    val instant: Instant
+public interface ValueInstant<out T> {
+    public val value: T
+    public val instant: Instant
 
-    operator fun component1() = value
-    operator fun component2() = instant
+    public operator fun component1() = value
+    public operator fun component2() = instant
 
-    companion object {
+    public companion object {
         @Deprecated("Use at(Instant) function instead", ReplaceWith("at(Instant)"))
-        operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
+        public operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
             BasicValueInstant(value, instant)
     }
 }
