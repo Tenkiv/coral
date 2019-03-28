@@ -21,7 +21,7 @@ import org.spekframework.spek2.*
 import org.spekframework.spek2.style.specification.*
 import kotlin.test.*
 
-@CoralExpiremental
+@ExperimentalCoralApi
 object LoopSpec : Spek({
     var a = 0
 

@@ -18,4 +18,4 @@
 package org.tenkiv.coral
 
 @Experimental
-public annotation class CoralExpiremental
+public annotation class ExperimentalCoralApi

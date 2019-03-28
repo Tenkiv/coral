@@ -19,7 +19,7 @@ package org.tenkiv.coral
 
 import kotlin.jvm.*
 
-@CoralExpiremental
+@ExperimentalCoralApi
 public inline fun loop(block: LoopControl.() -> Unit) {
 
     while (true)
@@ -31,7 +31,7 @@ public inline fun loop(block: LoopControl.() -> Unit) {
 
 }
 
-@CoralExpiremental
+@ExperimentalCoralApi
 public inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
     for (element in this)
         try {
@@ -41,7 +41,7 @@ public inline fun <T> Iterator<T>.forEachLoop(operation: LoopControl.(T) -> Unit
         }
 }
 
-@CoralExpiremental
+@ExperimentalCoralApi
 public inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit) {
     for (element in this)
         try {
@@ -51,10 +51,10 @@ public inline fun <T> Iterable<T>.forEachLoop(operation: LoopControl.(T) -> Unit
         }
 }
 
-@CoralExpiremental
+@ExperimentalCoralApi
 public class LoopControl private constructor() {
 
-    @CoralExpiremental
+    @ExperimentalCoralApi
     public fun breakLoop(): Nothing = throw Break
 
     internal object Break : Throwable()
