@@ -23,6 +23,7 @@ plugins {
     `java-library`
     java
     `maven-publish`
+    signing
 }
 
 buildscript {
@@ -31,6 +32,9 @@ buildscript {
         mavenCentral()
     }
 }
+
+val isRelease = !version.toString().endsWith("SNAPSHOT")
+if (isRelease) println("Verison is a release") else println("Version is snapshot")
 
 kotlin {
     jvm {
@@ -159,6 +163,8 @@ publishing {
                     }
                 }
             }
+
+
         }
     }
 
@@ -173,5 +179,11 @@ publishing {
                 password = System.getenv("MAVEN_REPO_PASSWORD")
             }
         }
+    }
+}
+
+signing {
+    if (isRelease) {
+        sign(publishing.publications["maven-coral-jvm"])
     }
 }
