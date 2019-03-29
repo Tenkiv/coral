@@ -28,6 +28,7 @@ public inline fun <E> Iterable<E>.average(getValue: (E) -> Double): Double {
     return if (count == 0) Double.NaN else totalValue / count
 }
 
+@Deprecated("Should use filter followed by average instead.")
 public inline fun <E> Iterable<E>.average(getValue: (E) -> Double, condition: (E) -> Boolean): Double {
     var totalValue = 0.0
     var count = 0
