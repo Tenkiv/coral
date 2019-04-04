@@ -20,5 +20,5 @@ object Vof {
     const val spek = "2.0.1"
     const val junitLauncher = "1.4.0"
     const val jacocoTool = "0.8.2"
-    const val dokka = "0.9.17"
+    const val dokka = "0.9.18"
 }

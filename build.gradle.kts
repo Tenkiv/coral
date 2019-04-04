@@ -16,14 +16,16 @@
  */
 
 import org.jetbrains.kotlin.gradle.tasks.*
+import java.io.*
+import java.util.*
 
 plugins {
     kotlin("multiplatform") version Vof.kotlinVersion
     jacoco
-    `java-library`
     java
     `maven-publish`
     signing
+    id("org.jetbrains.dokka") version Vof.dokka
 }
 
 buildscript {
@@ -34,7 +36,15 @@ buildscript {
 }
 
 val isRelease = !version.toString().endsWith("SNAPSHOT")
-if (isRelease) println("Verison is a release") else println("Version is snapshot")
+val properties = Properties()
+val propertiesFile = File(rootDir, "local.properties")
+if (propertiesFile.canRead()) {
+    properties.load(FileInputStream(propertiesFile))
+}
+
+extra["signing.keyId"] = properties.getProperty("SIGNING_KEYID")
+extra["signing.secretKeyRingFile"] = properties.getProperty("SIGNING_SECRETKEYRINGFILE")
+extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
 
 kotlin {
     jvm {
@@ -132,51 +142,177 @@ tasks {
         kotlinOptions.suppressWarnings = true
         kotlinOptions.jvmTarget = "1.8"
     }
+
+    dokka {
+        outputDirectory = "$buildDir/docs"
+        impliedPlatforms = mutableListOf("Common")
+
+        kotlinTasks { emptyList() }
+
+        sourceRoot {
+            path = kotlin.sourceSets.commonMain.get().kotlin.srcDirs.first().absolutePath
+            platforms = listOf("Common")
+        }
+
+        sourceRoot {
+            path = kotlin.jvm().compilations["main"].defaultSourceSet.kotlin.srcDirs.first().absolutePath
+            platforms = listOf("JVM")
+        }
+    }
+
+    register<Jar>("sourcesJar") {
+        from(project.sourceSets.main.get().allJava)
+        archiveClassifier.set("sources")
+    }
+
+    register<Jar>("javadocJar") {
+        from(getByName("dokka"))
+        archiveClassifier.set("javadoc")
+    }
 }
 
 publishing {
     publications {
-        create<MavenPublication>("maven-coral-jvm") {
-            val jvm by getting {
-                groupId = "org.tenkiv.coral"
-                artifactId = "coral-jvm"
-                version = project.version.toString()
+        if (isRelease) {
+            create<MavenPublication>("maven-coral-jvm") {
+                val jvm by getting {
+                    groupId = "org.tenkiv.coral"
+                    artifactId = "coral-jvm"
+                    version = project.version.toString()
 
-                from(components["java"])
+                    from(components["java"])
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
 
-                pom {
-                    name.set(project.name)
-                    description.set(Info.pomDescription)
-                    url.set(System.getenv("CI_PROJECT_URL"))
-                    licenses {
-                        license {
-                            name.set(Info.pomLicense)
-                            url.set(Info.pomLicenseUrl)
+                    pom {
+                        name.set(project.name)
+                        description.set(Info.pomDescription)
+                        url.set(Info.projectUrl)
+                        licenses {
+                            license {
+                                name.set(Info.pomLicense)
+                                url.set(Info.pomLicenseUrl)
+                            }
                         }
-                    }
-                    organization {
-                        name.set(Info.pomOrg)
-                    }
-                    scm {
-                        connection.set(System.getenv("CI_REPOSITORY_URL"))
-                        url.set(System.getenv("CI_PROJECT_URL"))
+                        organization {
+                            name.set(Info.pomOrg)
+                        }
+                        scm {
+                            connection.set(Info.projectCloneUrl)
+                            url.set(Info.projectUrl)
+                        }
                     }
                 }
             }
 
+            create<MavenPublication>("maven-coral-metadata") {
+                val metadata by getting {
+                    groupId = "org.tenkiv.coral"
+                    artifactId = "coral-metadata"
+                    version = project.version.toString()
 
+                    from(components["java"])
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
+
+                    pom {
+                        name.set(project.name)
+                        description.set(Info.pomDescription)
+                        url.set(Info.projectUrl)
+                        licenses {
+                            license {
+                                name.set(Info.pomLicense)
+                                url.set(Info.pomLicenseUrl)
+                            }
+                        }
+                        organization {
+                            name.set(Info.pomOrg)
+                        }
+                        scm {
+                            connection.set(Info.projectCloneUrl)
+                            url.set(Info.projectUrl)
+                        }
+                    }
+                }
+            }
+        } else {
+            create<MavenPublication>("maven-coral-jvm-snapshot") {
+                val jvm by getting {
+                    groupId = "org.tenkiv.coral"
+                    artifactId = "coral-jvm"
+                    version = project.version.toString()
+
+                    from(components["java"])
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
+
+                    pom {
+                        name.set(project.name)
+                        description.set(Info.pomDescription)
+                        url.set(System.getenv("CI_PROJECT_URL"))
+                        licenses {
+                            license {
+                                name.set(Info.pomLicense)
+                                url.set(Info.pomLicenseUrl)
+                            }
+                        }
+                        organization {
+                            name.set(Info.pomOrg)
+                        }
+                        scm {
+                            connection.set(System.getenv("CI_REPOSITORY_URL"))
+                            url.set(System.getenv("CI_PROJECT_URL"))
+                        }
+                    }
+                }
+            }
+
+            create<MavenPublication>("maven-coral-metadata-snapshot") {
+                val metadata by getting {
+                    groupId = "org.tenkiv.coral"
+                    artifactId = "coral-metadata"
+                    version = project.version.toString()
+
+                    from(components["java"])
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
+
+                    pom {
+                        name.set(project.name)
+                        description.set(Info.pomDescription)
+                        url.set(System.getenv("CI_PROJECT_URL"))
+                        licenses {
+                            license {
+                                name.set(Info.pomLicense)
+                                url.set(Info.pomLicenseUrl)
+                            }
+                        }
+                        organization {
+                            name.set(Info.pomOrg)
+                        }
+                        scm {
+                            connection.set(System.getenv("CI_REPOSITORY_URL"))
+                            url.set(System.getenv("CI_PROJECT_URL"))
+                        }
+                    }
+                }
+            }
         }
-    }
 
-    repositories {
-        maven {
-            // change URLs to point to your repos, e.g. http://my.org/repo
-            val releasesRepoUrl = uri(Info.sonatypeReleaseRepoUrl)
-            val snapshotsRepoUrl = uri(Info.sonatypeSnapshotRepoUrl)
-            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-            credentials {
-                username = System.getenv("MAVEN_REPO_USER")
-                password = System.getenv("MAVEN_REPO_PASSWORD")
+        repositories {
+            maven {
+                val releasesRepoUrl = uri(Info.sonatypeReleaseRepoUrl)
+                val snapshotsRepoUrl = uri(Info.sonatypeSnapshotRepoUrl)
+                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                credentials {
+                    if (isRelease) {
+                        username = properties.getProperty("MAVEN_USER")
+                        password = properties.getProperty("MAVEN_PASSWORD")
+                    } else {
+                        username = System.getenv("MAVEN_REPO_USER")
+                        password = System.getenv("MAVEN_REPO_PASSWORD")
+                    }
+                }
             }
         }
     }
@@ -185,5 +321,6 @@ publishing {
 signing {
     if (isRelease) {
         sign(publishing.publications["maven-coral-jvm"])
+        sign(publishing.publications["maven-coral-metadata"])
     }
 }
