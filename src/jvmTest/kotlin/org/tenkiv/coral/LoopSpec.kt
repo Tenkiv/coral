@@ -19,19 +19,16 @@ package org.tenkiv.coral
 
 import org.spekframework.spek2.*
 import org.spekframework.spek2.style.specification.*
-import kotlin.test.*
 
 @ExperimentalCoralApi
 object LoopSpec : Spek({
     var a = 0
 
     describe("calls breakLoop from within a loop") {
-        it("fails with throwable if loop breaks") {
-            assertFails {
-                loop {
-                    a++
-                    if (a == 10) breakLoop()
-                }
+        it("breaks the loop successfully") {
+            loop {
+                a++
+                if (a == 10) breakLoop()
             }
         }
     }

@@ -16,8 +16,8 @@
  */
 
 import org.jetbrains.kotlin.gradle.tasks.*
-import java.io.*
-import java.util.*
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     kotlin("multiplatform") version Vof.kotlinVersion
@@ -26,6 +26,7 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version Vof.dokka
+    `java-library`
 }
 
 buildscript {
@@ -34,17 +35,6 @@ buildscript {
         mavenCentral()
     }
 }
-
-val isRelease = !version.toString().endsWith("SNAPSHOT")
-val properties = Properties()
-val propertiesFile = File(rootDir, "local.properties")
-if (propertiesFile.canRead()) {
-    properties.load(FileInputStream(propertiesFile))
-}
-
-extra["signing.keyId"] = properties.getProperty("SIGNING_KEYID")
-extra["signing.secretKeyRingFile"] = properties.getProperty("SIGNING_SECRETKEYRINGFILE")
-extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
 
 kotlin {
     jvm {
@@ -70,6 +60,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation("org.spekframework.spek2:spek-dsl-metadata:${Vof.spek}")
             }
         }
 
@@ -81,8 +72,6 @@ kotlin {
         }
 
         jvm().compilations["test"].defaultSourceSet {
-            apply<JavaLibraryPlugin>()
-
             repositories {
                 mavenCentral()
                 jcenter()
@@ -92,39 +81,21 @@ kotlin {
                 implementation(kotlin("reflect", Vof.kotlinVersion))
                 implementation(kotlin("test", Vof.kotlinVersion))
 
+
                 implementation("org.spekframework.spek2:spek-dsl-jvm:${Vof.spek}") {
-                    exclude(group = "org.jetbrains.kotlin")
+                    exclude("org.jetbrains.kotlin")
                 }
 
                 implementation("org.spekframework.spek2:spek-runner-junit5:${Vof.spek}") {
-                    exclude(group = "org.jetbrains.kotlin")
-                    exclude(group = "org.junit.platform")
+                    exclude("org.jetbrains.kotlin")
+                    exclude("org.junit.platform")
                 }
 
-                implementation("org.junit.platform:junit-platform-launcher:${Vof.junitLauncher}")
+                implementation("org.junit.platform:junit-platform-launcher:${Vof.junitPlatform}")
             }
 
             jacoco {
                 toolVersion = Vof.jacocoTool
-            }
-
-            tasks {
-                val jacocoReport = withType<JacocoReport> {
-                    reports {
-                        html.isEnabled = true
-                        xml.isEnabled = true
-                        csv.isEnabled = false
-                    }
-                }
-
-                withType(Test::class) {
-                    outputs.upToDateWhen { false }
-                    useJUnitPlatform {
-                        includeEngines("spek2")
-                    }
-
-                    finalizedBy(jacocoReport)
-                }
             }
         }
 
@@ -141,6 +112,24 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions.suppressWarnings = true
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    val jacocoReport = withType<JacocoReport> {
+        reports {
+            html.isEnabled = true
+            xml.isEnabled = true
+            csv.isEnabled = false
+        }
+    }
+
+    named<Test>("jvmTest") {
+        outputs.upToDateWhen { false }
+        useJUnitPlatform {
+            includeEngines("spek2")
+        }
+
+        maxHeapSize = "1g"
+        finalizedBy(jacocoReport)
     }
 
     dokka {
@@ -170,6 +159,17 @@ tasks {
         archiveClassifier.set("javadoc")
     }
 }
+
+val isRelease = !version.toString().endsWith("SNAPSHOT")
+val properties = Properties()
+val propertiesFile = File(rootDir, "local.properties")
+if (propertiesFile.canRead()) {
+    properties.load(FileInputStream(propertiesFile))
+}
+
+extra["signing.keyId"] = properties.getProperty("SIGNING_KEYID")
+extra["signing.secretKeyRingFile"] = properties.getProperty("SIGNING_SECRETKEYRINGFILE")
+extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
 
 publishing {
     publications {

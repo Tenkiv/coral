@@ -107,7 +107,7 @@ object FeqSpec : Spek({
                     "of the correct value of the second float"
         ) {
             notEqualFloats.forEach {
-                assertEquals(true, it.first feq it.second)
+                assertEquals(false, it.first feq it.second)
             }
         }
     }
