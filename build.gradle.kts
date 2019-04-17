@@ -174,37 +174,6 @@ extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
 publishing {
     publications {
         if (isRelease) {
-            create<MavenPublication>("maven-coral-jvm") {
-                val jvm by getting {
-                    groupId = "org.tenkiv.coral"
-                    artifactId = "coral-jvm"
-                    version = project.version.toString()
-
-                    from(components["java"])
-                    artifact(tasks["sourcesJar"])
-                    artifact(tasks["javadocJar"])
-
-                    pom {
-                        name.set(project.name)
-                        description.set(Info.pomDescription)
-                        url.set(Info.projectUrl)
-                        licenses {
-                            license {
-                                name.set(Info.pomLicense)
-                                url.set(Info.pomLicenseUrl)
-                            }
-                        }
-                        organization {
-                            name.set(Info.pomOrg)
-                        }
-                        scm {
-                            connection.set(Info.projectCloneUrl)
-                            url.set(Info.projectUrl)
-                        }
-                    }
-                }
-            }
-
             create<MavenPublication>("maven-coral-metadata") {
                 val metadata by getting {
                     groupId = "org.tenkiv.coral"
@@ -225,6 +194,47 @@ publishing {
                                 url.set(Info.pomLicenseUrl)
                             }
                         }
+                        developers {
+                            developer {
+                                email.set(Info.projectDevEmail)
+                            }
+                        }
+                        organization {
+                            name.set(Info.pomOrg)
+                        }
+                        scm {
+                            connection.set(Info.projectCloneUrl)
+                            url.set(Info.projectUrl)
+                        }
+                    }
+                }
+            }
+
+            create<MavenPublication>("maven-coral-jvm") {
+                val jvm by getting {
+                    groupId = "org.tenkiv.coral"
+                    artifactId = "coral-jvm"
+                    version = project.version.toString()
+
+                    from(components["java"])
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
+
+                    pom {
+                        name.set(project.name)
+                        description.set(Info.pomDescription)
+                        url.set(Info.projectUrl)
+                        licenses {
+                            license {
+                                name.set(Info.pomLicense)
+                                url.set(Info.pomLicenseUrl)
+                            }
+                        }
+                        developers {
+                            developer {
+                                email.set(Info.projectDevEmail)
+                            }
+                        }
                         organization {
                             name.set(Info.pomOrg)
                         }
@@ -236,6 +246,42 @@ publishing {
                 }
             }
         } else {
+            create<MavenPublication>("maven-coral-metadata-snapshot") {
+                val metadata by getting {
+                    groupId = "org.tenkiv.coral"
+                    artifactId = "coral-metadata"
+                    version = project.version.toString()
+
+                    from(components["java"])
+                    artifact(tasks["sourcesJar"])
+                    artifact(tasks["javadocJar"])
+
+                    pom {
+                        name.set(project.name)
+                        description.set(Info.pomDescription)
+                        url.set(System.getenv("CI_PROJECT_URL"))
+                        licenses {
+                            license {
+                                name.set(Info.pomLicense)
+                                url.set(Info.pomLicenseUrl)
+                            }
+                        }
+                        developers {
+                            developer {
+                                email.set(Info.projectDevEmail)
+                            }
+                        }
+                        organization {
+                            name.set(Info.pomOrg)
+                        }
+                        scm {
+                            connection.set(System.getenv("CI_REPOSITORY_URL"))
+                            url.set(System.getenv("CI_PROJECT_URL"))
+                        }
+                    }
+                }
+            }
+
             create<MavenPublication>("maven-coral-jvm-snapshot") {
                 val jvm by getting {
                     groupId = "org.tenkiv.coral"
@@ -256,35 +302,9 @@ publishing {
                                 url.set(Info.pomLicenseUrl)
                             }
                         }
-                        organization {
-                            name.set(Info.pomOrg)
-                        }
-                        scm {
-                            connection.set(System.getenv("CI_REPOSITORY_URL"))
-                            url.set(System.getenv("CI_PROJECT_URL"))
-                        }
-                    }
-                }
-            }
-
-            create<MavenPublication>("maven-coral-metadata-snapshot") {
-                val metadata by getting {
-                    groupId = "org.tenkiv.coral"
-                    artifactId = "coral-metadata"
-                    version = project.version.toString()
-
-                    from(components["java"])
-                    artifact(tasks["sourcesJar"])
-                    artifact(tasks["javadocJar"])
-
-                    pom {
-                        name.set(project.name)
-                        description.set(Info.pomDescription)
-                        url.set(System.getenv("CI_PROJECT_URL"))
-                        licenses {
-                            license {
-                                name.set(Info.pomLicense)
-                                url.set(Info.pomLicenseUrl)
+                        developers {
+                            developer {
+                                email.set(Info.projectDevEmail)
                             }
                         }
                         organization {
@@ -320,7 +340,7 @@ publishing {
 
 signing {
     if (isRelease) {
-        sign(publishing.publications["maven-coral-jvm"])
         sign(publishing.publications["maven-coral-metadata"])
+        sign(publishing.publications["maven-coral-jvm"])
     }
 }
