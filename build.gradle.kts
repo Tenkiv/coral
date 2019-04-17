@@ -174,10 +174,10 @@ extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
 publishing {
     publications {
         if (isRelease) {
-            create<MavenPublication>("maven-coral-metadata") {
+            create<MavenPublication>("maven-coral-common") {
                 val metadata by getting {
                     groupId = "org.tenkiv.coral"
-                    artifactId = "coral-metadata"
+                    artifactId = "coral-common"
                     version = project.version.toString()
 
                     from(components["java"])
@@ -246,10 +246,10 @@ publishing {
                 }
             }
         } else {
-            create<MavenPublication>("maven-coral-metadata-snapshot") {
+            create<MavenPublication>("maven-coral-common-snapshot") {
                 val metadata by getting {
                     groupId = "org.tenkiv.coral"
-                    artifactId = "coral-metadata"
+                    artifactId = "coral-common"
                     version = project.version.toString()
 
                     from(components["java"])
@@ -340,7 +340,7 @@ publishing {
 
 signing {
     if (isRelease) {
-        sign(publishing.publications["maven-coral-metadata"])
+        sign(publishing.publications["maven-coral-common"])
         sign(publishing.publications["maven-coral-jvm"])
     }
 }
