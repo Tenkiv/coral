@@ -16,4 +16,3 @@
  */
 
 rootProject.name = "coral"
-enableFeaturePreview("GRADLE_METADATA")
