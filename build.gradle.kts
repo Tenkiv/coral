@@ -252,8 +252,8 @@ publishing {
                     artifactId = "coral-common"
                     version = project.version.toString()
 
-                    from(components["java"])
-                    artifact(tasks["sourcesJar"])
+                    //from(components["java"])
+                    //artifact(tasks["sourcesJar"])
                     artifact(tasks["javadocJar"])
 
                     pom {
@@ -288,8 +288,8 @@ publishing {
                     artifactId = "coral-jvm"
                     version = project.version.toString()
 
-                    from(components["java"])
-                    artifact(tasks["sourcesJar"])
+                    //from(components["java"])
+                    //artifact(tasks["sourcesJar"])
                     artifact(tasks["javadocJar"])
 
                     pom {
