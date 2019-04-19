@@ -8,7 +8,6 @@ stages:
 assembleDebug:
   stage: build
   script:
-    - ./gradlew assemble
     - ./gradlew build
   artifacts:
     paths:
@@ -22,4 +21,4 @@ debugTests:
 mavenDeploy:
   stage: deploy
   script:
-    - if grep -q "SNAPSHOT" gradle.properties; then ./gradlew publishMaven-coral-common-snapshotPublicationToMavenRepository; ./gradlew publishMaven-coral-jvm-snapshotPublicationToMavenRepository; fi
+    - if grep -q "SNAPSHOT" gradle.properties; then ./gradlew publish; fi
