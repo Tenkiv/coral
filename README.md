@@ -2,8 +2,9 @@
 Coral is a common set of kotlin stdlib and platform stdlib extensions used in many of our Kotlin projects at Tenkiv.
 
  | | |
- :-----: | :-----:
- JVM | placeholder
+ ------- | :-----:
+ Common | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral/coral-common/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral/coral-common)
+ JVM | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral/coral-jvm/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.tenkiv.coral/coral-jvm)
 
 Current features:
 * `unimut()` delegate that initialises a variable to null then allows to be set exactly once at any time.
