@@ -10,3 +10,5 @@ out/
 /coral-common/build/
 /coral-jvm/build/
 *.log
+/buildSrc/.gradle/
+/buildSrc/build/
