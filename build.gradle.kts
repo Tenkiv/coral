@@ -233,7 +233,7 @@ publishing {
 
         val js by getting {
             groupId = "org.tenkiv.coral"
-            artifactId = "coral-jvm"
+            artifactId = "coral-js"
             version = project.version.toString()
 
             artifact(tasks["javadocJar"])
