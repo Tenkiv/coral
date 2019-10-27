@@ -16,9 +16,9 @@
  */
 
 object Vof {
-    const val kotlinVersion = "1.3.30"
-    const val spek = "2.0.2"
+    const val kotlinVersion = "1.3.50"
+    const val spek = "2.0.8"
     const val junitPlatform = "1.4.1"
     const val jacocoTool = "0.8.3"
-    const val dokka = "0.9.18"
+    const val dokka = "0.10.0"
 }

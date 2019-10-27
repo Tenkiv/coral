@@ -15,6 +15,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.*
 import java.io.*
 import java.util.*
@@ -36,22 +37,21 @@ buildscript {
     }
 }
 
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
 kotlin {
     jvm {
-        val main by compilations.getting {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
+        compilations["main"].kotlinOptions {
+            jvmTarget = "1.8"
         }
     }
+    js()
 
     sourceSets {
         val commonMain by getting {
-            repositories {
-                mavenCentral()
-                jcenter()
-            }
-
             dependencies {
                 implementation(kotlin("stdlib-common"))
             }
@@ -64,18 +64,13 @@ kotlin {
             }
         }
 
-        jvm().compilations["main"].defaultSourceSet {
+        val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
 
-        jvm().compilations["test"].defaultSourceSet {
-            repositories {
-                mavenCentral()
-                jcenter()
-            }
-
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("reflect", Vof.kotlinVersion))
                 implementation(kotlin("test", Vof.kotlinVersion))
@@ -97,11 +92,16 @@ kotlin {
                 toolVersion = Vof.jacocoTool
             }
         }
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+            }
+        }
 
-        all {
-            repositories {
-                jcenter()
-                mavenCentral()
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+                implementation("org.spekframework.spek2:spek-dsl-js:${Vof.spek}")
             }
         }
     }
@@ -131,20 +131,20 @@ tasks {
         finalizedBy(jacocoReport)
     }
 
-    dokka {
+    val dokka by getting(DokkaTask::class) {
         outputDirectory = "$buildDir/docs"
-        impliedPlatforms = mutableListOf("Common")
+        outputFormat = "html"
 
-        kotlinTasks { emptyList() }
+        multiplatform {
+            val jvm by creating {
+                targets = listOf("Jvm")
+                platform = "jvm"
+            }
 
-        sourceRoot {
-            path = kotlin.sourceSets.commonMain.get().kotlin.srcDirs.first().absolutePath
-            platforms = listOf("Common")
-        }
-
-        sourceRoot {
-            path = kotlin.jvm().compilations["main"].defaultSourceSet.kotlin.srcDirs.first().absolutePath
-            platforms = listOf("JVM")
+            val js by creating {
+                targets = listOf("Js")
+                platform = "js"
+            }
         }
     }
 
@@ -200,6 +200,38 @@ publishing {
         }
 
         val jvm by getting {
+            groupId = "org.tenkiv.coral"
+            artifactId = "coral-jvm"
+            version = project.version.toString()
+
+            artifact(tasks["javadocJar"])
+
+            pom {
+                name.set(project.name)
+                description.set(Info.pomDescription)
+                url.set(Info.projectUrl)
+                licenses {
+                    license {
+                        name.set(Info.pomLicense)
+                        url.set(Info.pomLicenseUrl)
+                    }
+                }
+                developers {
+                    developer {
+                        email.set(Info.projectDevEmail)
+                    }
+                }
+                organization {
+                    name.set(Info.pomOrg)
+                }
+                scm {
+                    connection.set(Info.projectCloneUrl)
+                    url.set(Info.projectUrl)
+                }
+            }
+        }
+
+        val js by getting {
             groupId = "org.tenkiv.coral"
             artifactId = "coral-jvm"
             version = project.version.toString()
