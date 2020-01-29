@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="coral.buildSrc.main" target="1.8" />
+      <module name="coral.buildSrc.test" target="1.8" />
+      <module name="coral.main" target="1.8" />
+      <module name="coral.test" target="1.8" />
+      <module name="org.tenkiv.coral.buildSrc.main" target="11" />
+      <module name="org.tenkiv.coral.buildSrc.test" target="11" />
+      <module name="org.tenkiv.coral.coral-common.main" target="11" />
+      <module name="org.tenkiv.coral.coral-common.test" target="11" />
+      <module name="org.tenkiv.coral.coral-jvm.main" target="11" />
+      <module name="org.tenkiv.coral.coral-jvm.test" target="11" />
+      <module name="org.tenkiv.coral.coral.jvmMain" target="1.8" />
+      <module name="org.tenkiv.coral.coral.jvmTest" target="1.8" />
+      <module name="org.tenkiv.coral.coral.main" target="11" />
+      <module name="org.tenkiv.coral.coral.test" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
