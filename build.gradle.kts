@@ -22,12 +22,10 @@ import java.util.*
 
 plugins {
     kotlin("multiplatform") version Vof.kotlinVersion
-    jacoco
-    java
-    `maven-publish`
-    signing
     id("org.jetbrains.dokka") version Vof.dokka
-    `java-library`
+    id("maven-publish")
+    signing
+    jacoco
 }
 
 buildscript {
@@ -42,10 +40,21 @@ repositories {
     mavenCentral()
 }
 
+val isRelease = isRelease()
+val properties = createPropertiesFromLocal()
+setSigningExtrasFromProperties(properties)
+
 kotlin {
     jvm {
-        compilations["main"].kotlinOptions {
-            jvmTarget = "1.8"
+        val main by compilations.getting {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+        val test by compilations.getting {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
         }
     }
     js()
@@ -104,186 +113,64 @@ kotlin {
                 implementation("org.spekframework.spek2:spek-dsl-js:${Vof.spek}")
             }
         }
-    }
-}
 
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.suppressWarnings = true
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    val jacocoReport = withType<JacocoReport> {
-        reports {
-            html.isEnabled = true
-            xml.isEnabled = true
-            csv.isEnabled = false
-        }
-    }
-
-    named<Test>("jvmTest") {
-        outputs.upToDateWhen { false }
-        useJUnitPlatform {
-            includeEngines("spek2")
-        }
-
-        maxHeapSize = "1g"
-        finalizedBy(jacocoReport)
-    }
-
-    val dokka by getting(DokkaTask::class) {
-        outputDirectory = "$buildDir/docs"
-        outputFormat = "html"
-
-        multiplatform {
-            val jvm by creating {
-                targets = listOf("Jvm")
-                platform = "jvm"
-            }
-
-            val js by creating {
-                targets = listOf("Js")
-                platform = "js"
-            }
-        }
-    }
-
-    register<Jar>("javadocJar") {
-        from(getByName("dokka"))
-        archiveClassifier.set("javadoc")
-    }
-}
-
-val isRelease = !version.toString().endsWith("SNAPSHOT")
-val properties = Properties()
-val propertiesFile = File(rootDir, "local.properties")
-if (propertiesFile.canRead()) {
-    properties.load(FileInputStream(propertiesFile))
-}
-
-extra["signing.keyId"] = properties.getProperty("SIGNING_KEYID")
-extra["signing.secretKeyRingFile"] = properties.getProperty("SIGNING_SECRETKEYRINGFILE")
-extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
-
-publishing {
-    publications.withType<MavenPublication>().apply {
-        val metadata by getting {
-            groupId = "org.tenkiv.coral"
-            artifactId = "coral-common"
-            version = project.version.toString()
-
-            artifact(tasks["javadocJar"])
-
-            pom {
-                name.set(project.name)
-                description.set(Info.pomDescription)
-                url.set(Info.projectUrl)
-                licenses {
-                    license {
-                        name.set(Info.pomLicense)
-                        url.set(Info.pomLicenseUrl)
-                    }
-                }
-                developers {
-                    developer {
-                        email.set(Info.projectDevEmail)
-                    }
-                }
-                organization {
-                    name.set(Info.pomOrg)
-                }
-                scm {
-                    connection.set(Info.projectCloneUrl)
-                    url.set(Info.projectUrl)
+        tasks {
+            val jacocoReport = withType<JacocoReport> {
+                reports {
+                    html.isEnabled = true
+                    xml.isEnabled = true
+                    csv.isEnabled = false
                 }
             }
-        }
 
-        val jvm by getting {
-            groupId = "org.tenkiv.coral"
-            artifactId = "coral-jvm"
-            version = project.version.toString()
+            named<Test>("jvmTest") {
+                outputs.upToDateWhen { false }
+                useJUnitPlatform {
+                    includeEngines("spek2")
+                }
 
-            artifact(tasks["javadocJar"])
+                maxHeapSize = "1g"
+                finalizedBy(jacocoReport)
+            }
 
-            pom {
-                name.set(project.name)
-                description.set(Info.pomDescription)
-                url.set(Info.projectUrl)
-                licenses {
-                    license {
-                        name.set(Info.pomLicense)
-                        url.set(Info.pomLicenseUrl)
+            val dokka by getting(DokkaTask::class) {
+                outputDirectory = "$buildDir/docs"
+                outputFormat = "html"
+
+                multiplatform {
+                    val jvm by creating {
+                        targets = listOf("Jvm")
+                        platform = "jvm"
                     }
-                }
-                developers {
-                    developer {
-                        email.set(Info.projectDevEmail)
+
+                    val js by creating {
+                        targets = listOf("Js")
+                        platform = "js"
                     }
-                }
-                organization {
-                    name.set(Info.pomOrg)
-                }
-                scm {
-                    connection.set(Info.projectCloneUrl)
-                    url.set(Info.projectUrl)
                 }
             }
-        }
 
-        val js by getting {
-            groupId = "org.tenkiv.coral"
-            artifactId = "coral-js"
-            version = project.version.toString()
-
-            artifact(tasks["javadocJar"])
-
-            pom {
-                name.set(project.name)
-                description.set(Info.pomDescription)
-                url.set(Info.projectUrl)
-                licenses {
-                    license {
-                        name.set(Info.pomLicense)
-                        url.set(Info.pomLicenseUrl)
-                    }
-                }
-                developers {
-                    developer {
-                        email.set(Info.projectDevEmail)
-                    }
-                }
-                organization {
-                    name.set(Info.pomOrg)
-                }
-                scm {
-                    connection.set(Info.projectCloneUrl)
-                    url.set(Info.projectUrl)
-                }
+            register<Jar>("javadocJar") {
+                from(getByName("dokka"))
+                archiveClassifier.set("javadoc")
             }
         }
     }
 
-    repositories {
-        maven {
-            val releasesRepoUrl = uri(Info.sonatypeReleaseRepoUrl)
-            val snapshotsRepoUrl = uri(Info.sonatypeSnapshotRepoUrl)
-            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-            credentials {
-                if (isRelease) {
-                    username = properties.getProperty("MAVEN_USER")
-                    password = properties.getProperty("MAVEN_PASSWORD")
-                } else {
-                    username = System.getenv("MAVEN_REPO_USER")
-                    password = System.getenv("MAVEN_REPO_PASSWORD")
-                }
+    publishing {
+        publications.withType<MavenPublication>().apply {
+            val jvm by getting {
+                artifact(tasks.getByName("javadocJar"))
             }
-        }
-    }
-}
 
-signing {
-    if (isRelease) {
-        sign(publishing.publications)
+            val js by getting {
+                artifact(tasks.getByName("javadocJar"))
+            }
+        }.forEach {
+            it.configureMavenPom(isRelease, project)
+            signing { if (isRelease) sign(it) }
+        }
+
+        setMavenRepositories(isRelease, properties)
     }
 }
