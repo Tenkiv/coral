@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="coral-jvm-2.4.2-SNAPSHOT">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="coral-jvm-2.4.2-SNAPSHOT.jar">
+      <element id="module-output" name="org.tenkiv.coral.coral.jvmMain" />
+    </root>
+  </artifact>
+</component>

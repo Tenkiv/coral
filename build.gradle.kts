@@ -15,18 +15,17 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.*
 import java.io.*
 import java.util.*
 
 plugins {
     kotlin("multiplatform") version Vof.kotlinVersion
-    jacoco
-    java
-    `maven-publish`
-    signing
     id("org.jetbrains.dokka") version Vof.dokka
-    `java-library`
+    id("maven-publish")
+    signing
+    jacoco
 }
 
 buildscript {
@@ -36,6 +35,15 @@ buildscript {
     }
 }
 
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+val isRelease = isRelease()
+val properties = createPropertiesFromLocal()
+setSigningExtrasFromProperties(properties)
+
 kotlin {
     jvm {
         val main by compilations.getting {
@@ -43,15 +51,16 @@ kotlin {
                 jvmTarget = "1.8"
             }
         }
+        val test by compilations.getting {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
     }
+    js()
 
     sourceSets {
         val commonMain by getting {
-            repositories {
-                mavenCentral()
-                jcenter()
-            }
-
             dependencies {
                 implementation(kotlin("stdlib-common"))
             }
@@ -64,18 +73,13 @@ kotlin {
             }
         }
 
-        jvm().compilations["main"].defaultSourceSet {
+        val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
             }
         }
 
-        jvm().compilations["test"].defaultSourceSet {
-            repositories {
-                mavenCentral()
-                jcenter()
-            }
-
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("reflect", Vof.kotlinVersion))
                 implementation(kotlin("test", Vof.kotlinVersion))
@@ -97,161 +101,76 @@ kotlin {
                 toolVersion = Vof.jacocoTool
             }
         }
-
-        all {
-            repositories {
-                jcenter()
-                mavenCentral()
-            }
-        }
-    }
-}
-
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.suppressWarnings = true
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    val jacocoReport = withType<JacocoReport> {
-        reports {
-            html.isEnabled = true
-            xml.isEnabled = true
-            csv.isEnabled = false
-        }
-    }
-
-    named<Test>("jvmTest") {
-        outputs.upToDateWhen { false }
-        useJUnitPlatform {
-            includeEngines("spek2")
-        }
-
-        maxHeapSize = "1g"
-        finalizedBy(jacocoReport)
-    }
-
-    dokka {
-        outputDirectory = "$buildDir/docs"
-        impliedPlatforms = mutableListOf("Common")
-
-        kotlinTasks { emptyList() }
-
-        sourceRoot {
-            path = kotlin.sourceSets.commonMain.get().kotlin.srcDirs.first().absolutePath
-            platforms = listOf("Common")
-        }
-
-        sourceRoot {
-            path = kotlin.jvm().compilations["main"].defaultSourceSet.kotlin.srcDirs.first().absolutePath
-            platforms = listOf("JVM")
-        }
-    }
-
-    register<Jar>("javadocJar") {
-        from(getByName("dokka"))
-        archiveClassifier.set("javadoc")
-    }
-}
-
-val isRelease = !version.toString().endsWith("SNAPSHOT")
-val properties = Properties()
-val propertiesFile = File(rootDir, "local.properties")
-if (propertiesFile.canRead()) {
-    properties.load(FileInputStream(propertiesFile))
-}
-
-extra["signing.keyId"] = properties.getProperty("SIGNING_KEYID")
-extra["signing.secretKeyRingFile"] = properties.getProperty("SIGNING_SECRETKEYRINGFILE")
-extra["signing.password"] = properties.getProperty("SIGNING_KEYPASSWORD")
-
-publishing {
-    publications.withType<MavenPublication>().apply {
-        val metadata by getting {
-            groupId = "org.tenkiv.coral"
-            artifactId = "coral-common"
-            version = project.version.toString()
-
-            artifact(tasks["javadocJar"])
-
-            pom {
-                name.set(project.name)
-                description.set(Info.pomDescription)
-                url.set(Info.projectUrl)
-                licenses {
-                    license {
-                        name.set(Info.pomLicense)
-                        url.set(Info.pomLicenseUrl)
-                    }
-                }
-                developers {
-                    developer {
-                        email.set(Info.projectDevEmail)
-                    }
-                }
-                organization {
-                    name.set(Info.pomOrg)
-                }
-                scm {
-                    connection.set(Info.projectCloneUrl)
-                    url.set(Info.projectUrl)
-                }
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
             }
         }
 
-        val jvm by getting {
-            groupId = "org.tenkiv.coral"
-            artifactId = "coral-jvm"
-            version = project.version.toString()
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+                implementation("org.spekframework.spek2:spek-dsl-js:${Vof.spek}")
+            }
+        }
 
-            artifact(tasks["javadocJar"])
+        tasks {
+            val jacocoReport = withType<JacocoReport> {
+                reports {
+                    html.isEnabled = true
+                    xml.isEnabled = true
+                    csv.isEnabled = false
+                }
+            }
 
-            pom {
-                name.set(project.name)
-                description.set(Info.pomDescription)
-                url.set(Info.projectUrl)
-                licenses {
-                    license {
-                        name.set(Info.pomLicense)
-                        url.set(Info.pomLicenseUrl)
+            named<Test>("jvmTest") {
+                outputs.upToDateWhen { false }
+                useJUnitPlatform {
+                    includeEngines("spek2")
+                }
+
+                maxHeapSize = "1g"
+                finalizedBy(jacocoReport)
+            }
+
+            val dokka by getting(DokkaTask::class) {
+                outputDirectory = "$buildDir/docs"
+                outputFormat = "html"
+
+                multiplatform {
+                    val jvm by creating {
+                        targets = listOf("Jvm")
+                        platform = "jvm"
+                    }
+
+                    val js by creating {
+                        targets = listOf("Js")
+                        platform = "js"
                     }
                 }
-                developers {
-                    developer {
-                        email.set(Info.projectDevEmail)
-                    }
-                }
-                organization {
-                    name.set(Info.pomOrg)
-                }
-                scm {
-                    connection.set(Info.projectCloneUrl)
-                    url.set(Info.projectUrl)
-                }
+            }
+
+            register<Jar>("javadocJar") {
+                from(getByName("dokka"))
+                archiveClassifier.set("javadoc")
             }
         }
     }
 
-    repositories {
-        maven {
-            val releasesRepoUrl = uri(Info.sonatypeReleaseRepoUrl)
-            val snapshotsRepoUrl = uri(Info.sonatypeSnapshotRepoUrl)
-            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-            credentials {
-                if (isRelease) {
-                    username = properties.getProperty("MAVEN_USER")
-                    password = properties.getProperty("MAVEN_PASSWORD")
-                } else {
-                    username = System.getenv("MAVEN_REPO_USER")
-                    password = System.getenv("MAVEN_REPO_PASSWORD")
-                }
+    publishing {
+        publications.withType<MavenPublication>().apply {
+            val jvm by getting {
+                artifact(tasks.getByName("javadocJar"))
             }
-        }
-    }
-}
 
-signing {
-    if (isRelease) {
-        sign(publishing.publications)
+            val js by getting {
+                artifact(tasks.getByName("javadocJar"))
+            }
+        }.forEach {
+            it.configureMavenPom(isRelease, project)
+            signing { if (isRelease) sign(it) }
+        }
+
+        setMavenRepositories(isRelease, properties)
     }
 }

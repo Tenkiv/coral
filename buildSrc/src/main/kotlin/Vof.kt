@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Tenkiv, Inc.
+ * Copyright 2020 Tenkiv, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -16,9 +16,9 @@
  */
 
 object Vof {
-    const val kotlinVersion = "1.3.30"
-    const val spek = "2.0.2"
+    const val kotlinVersion = "1.3.61"
+    const val spek = "2.0.9"
     const val junitPlatform = "1.4.1"
     const val jacocoTool = "0.8.3"
-    const val dokka = "0.9.18"
+    const val dokka = "0.10.0"
 }
