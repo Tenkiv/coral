@@ -23,5 +23,9 @@ import kotlin.reflect.*
  * Checks to see if one Kotlin type conforms to another. Will return the same result as if the 'is' operator were
  * used to check an instance of the class against a type.
  */
+@Deprecated(
+    message = "Better to use Kotlin types.",
+    replaceWith = ReplaceWith("this.createType().isSubtypeOf(comparate.createType())")
+)
 public infix fun <T : Any, C : Any> KClass<T>.can(comparate: KClass<C>) =
     comparate.java.isAssignableFrom(this.java)
