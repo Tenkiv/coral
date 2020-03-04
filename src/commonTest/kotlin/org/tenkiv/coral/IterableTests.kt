@@ -24,11 +24,13 @@ import kotlin.test.*
 class DoubleCollectionTests {
     val doubleCollection = listOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0)
 
-    @Test fun average() {
+    @Test
+    fun average() {
         assertTrue(doubleCollection.average { it }.feq(5.5, 0.00001))
     }
 
-    @Test fun ratio() {
+    @Test
+    fun ratio() {
         assertTrue(
             doubleCollection.ratio(
                 of = { if (it % 2.0 feq 0.0) it else 0.0 },
@@ -37,7 +39,8 @@ class DoubleCollectionTests {
         )
     }
 
-    @Test fun ratioToTotal() {
+    @Test
+    fun ratioToTotal() {
         doubleCollection.ratioToTotal(
             of = { if (it % 2.0 feq 0.0) it else 0.0 },
             other = { if (it % 2.0 feq 0.0) 0.0 else it }
@@ -49,7 +52,8 @@ class DoubleCollectionTests {
 class BooleanCollectionTests {
     val booleanCollection = listOf(true, false, true, false, true, false, true, false)
 
-    @Test fun booleanRatio() {
+    @Test
+    fun booleanRatio() {
         assertTrue(
             booleanCollection.booleanRatio(
                 of = { it },
@@ -58,7 +62,8 @@ class BooleanCollectionTests {
         )
     }
 
-    @Test fun serializationRatioToTotal() {
+    @Test
+    fun serializationRatioToTotal() {
         assertTrue(
             booleanCollection.booleanRatioToTotal(
                 of = { it },
@@ -72,7 +77,8 @@ class BooleanCollectionTests {
 class EmptyCollectionTests {
     val emptyCollection: List<Double> = emptyList()
 
-    @Test fun average() {
+    @Test
+    fun average() {
         assertTrue(emptyCollection.average { it }.isNaN())
     }
 

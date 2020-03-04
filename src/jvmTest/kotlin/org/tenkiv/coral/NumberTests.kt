@@ -21,63 +21,65 @@ package org.tenkiv.coral
 
 import kotlin.test.*
 
-class EqualDoubleTests {
-    val equalDoubles = listOf(
-        0.0 to 0.0,
-        (0.15 + 0.15) to (0.1 + 0.2),
-        (1_000.0 / 100) to 10.0,
-        (1_000.1 - 1_000) to 0.1
-    )
-
-    @Test
-    fun `default feq`() = equalDoubles.forEach { equalDoublesPair ->
-        assertTrue(equalDoublesPair.first feq equalDoublesPair.second)
-    }
-
-}
-
-class NotEqualDoublesTests {
-    val notEqualDoubles = listOf(
-        1_000_000_000.0 to 1_000_000_000.001,
-        0.0000000000000000002 to 0.0000000000000000001
+class EqualFloatsTests {
+    val equalFloats = listOf(
+        0.0f to 0.0f,
+        (0.15f + 0.15f) to (0.1f + 0.2f),
+        (1_000.0f / 100f) to 10.0f,
+        (100.5f - 100f) to 0.5f
     )
 
     @Test
     fun `default feq`() {
-        notEqualDoubles.forEach {
-            assertFalse(it.first feq it.second)
+        equalFloats.forEach { equalFloatsPair ->
+            assertTrue(equalFloatsPair.first feq equalFloatsPair.second)
         }
     }
 
 }
 
-class ApproximatelyEqualDoublesEpsilonTests {
-    val first = 1_000_000_000.0001
-    val second = 1_000_000_000.0002
+class NotEqualFloatTests {
+    val notEqualFloats = listOf(
+        60_000f to 60_001f,
+        0.00000000002f to 0.00000000001f
+    )
 
     @Test
-    fun `feq with epsilon provided that is smaller than the difference between the numbers being compared`() {
-        assertFalse(first.feq(second, 0.00001))
-    }
-
-    @Test
-    fun `feq with epsilon provided that is larger than the difference between the numbers being compared`() {
-        assertTrue(first.feq(second, 0.01))
+    fun `default feq`() {
+        notEqualFloats.forEach { notEqualFloatsPair ->
+            assertFalse(notEqualFloatsPair.first feq notEqualFloatsPair.second)
+        }
     }
 
 }
 
-class ApproximatelyEqualDoublesUlpTests {
-    val first = 1_000_000_000.0000001
-    val second = 1_000_000_000.0000003
+class ApproximatelyEqualFloatEpsilonTests {
+    val first = 1_000.01f
+    val second = 1_000.02f
 
     @Test
-    fun `feq with maxUlps provided that is smaller than the number of ulps between the numbers`() {
+    fun `feq with epsilon provided that is smaller than the difference between the numbers being compared`() {
+        assertFalse(first.feq(second, 0.001f))
+    }
+
+    @Test
+    fun `feq with epsilon provided that is larger than the difference between the numbers being compared`() {
+        assertTrue(first.feq(second, 0.1f))
+    }
+
+}
+
+class ApproximatelyEqualFloatUlpTests {
+    val first = 1_000_000.0625f
+    val second = 1_000_000.19f
+
+    @Test
+    fun `feq with epsilon provided that is smaller than the difference between the numbers being compared`() {
         assertFalse(first.feq(second, 1))
     }
 
     @Test
-    fun `feq with maxUlps provided that is greater than the number of ulps between the numbers`() {
+    fun `feq with epsilon provided that is larger than the difference between the numbers being compared`() {
         assertTrue(first.feq(second, 2))
     }
 
