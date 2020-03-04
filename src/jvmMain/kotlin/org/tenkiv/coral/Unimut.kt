@@ -15,6 +15,8 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:Suppress("DeprecatedCallableAddReplaceWith")
+
 package org.tenkiv.coral
 
 import java.util.concurrent.locks.*
@@ -31,6 +33,7 @@ private const val UNITIALIZED_MSG = "Attempted to access unimut property before 
  * @param onSet is called after setting the backing field to the new value.
  * @param onGet is called before returning the value of the property.
  */
+@Deprecated("It is better to use a some kind of deferred with coroutines.")
 public fun <T : Any> unimut(
     concurrencyMode: UniMutConcurrencyMode = UniMutConcurrencyMode.NONE,
     onGet: ((T) -> Unit)? = null,
@@ -47,6 +50,7 @@ public fun <T : Any> unimut(
  * Creates a Synchronised unimut and allows use of a custom ReadWriteLock. This is only recommended for advanced users
  * who have a specific reason for wanting to do this.
  */
+@Deprecated("It is better to use a some kind of deferred with coroutines.")
 public fun <T : Any> unimut(
     lock: ReadWriteLock,
     onGet: ((T?) -> Unit)? = null,
@@ -57,22 +61,29 @@ public fun <T : Any> unimut(
  * Creates a Blocking unimut and allows use of a custom Lock. This is only recommended for advanced users
  * who have a specific reason for wanting to do this.
  */
+@Deprecated("It is better to use a some kind of deferred with coroutines.")
 public fun <T : Any> unimut(
     lock: Lock,
     onGet: ((T?) -> Unit)? = null,
     onSet: ((T) -> Unit)? = null
 ): UniMutDelegate<T> = BlockingUniMutDelegate(onSet, onGet, lock)
 
+@Deprecated("unimut is deprecated")
 public enum class UniMutConcurrencyMode {
     /**
      * Blocks the thread attempting to get the property until the property is set.
      */
+    @Deprecated("unimut is deprecated")
     BLOCKING,
+    @Deprecated("unimut is deprecated")
     SYNCHRONIZED,
+    @Deprecated("unimut is deprecated")
     PUBLICATION,
+    @Deprecated("unimut is deprecated")
     NONE
 }
 
+@Deprecated("It is better to use a some kind of deferred with coroutines.")
 public open class UniMutDelegate<T : Any> internal constructor(
     protected open var onSet: ((T) -> Unit)?,
     protected val onGet: ((T) -> Unit)?
@@ -103,6 +114,7 @@ public open class UniMutDelegate<T : Any> internal constructor(
 
 }
 
+@Deprecated("It is better to use a some kind of deferred with coroutines.")
 private class PublicationSafeUnitMutDelegate<T : Any>(
     @Volatile override var onSet: ((T) -> Unit)?,
     onGet: ((T) -> Unit)?
@@ -111,6 +123,7 @@ private class PublicationSafeUnitMutDelegate<T : Any>(
     override var value: T? = null
 }
 
+@Deprecated("It is better to use a some kind of deferred with coroutines.")
 private class SynchronisedUniMutDelegate<T : Any>(
     onSet: ((T) -> Unit)?,
     onGet: ((T) -> Unit)?,
@@ -154,6 +167,7 @@ private class BlockingUniMutDelegate<T : Any>(
 
 }
 
+@Deprecated("unimut is deprecated")
 public class AlreadySetException : UnsupportedOperationException {
     public constructor() : super()
     public constructor(message: String) : super(message)
