@@ -63,9 +63,6 @@ fun Project.setSigningExtrasFromProperties(properties: Properties) {
 fun TaskContainerScope.registerCommonTasks() {
     withType<Test> {
         outputs.upToDateWhen { false }
-        useJUnitPlatform {
-            includeEngines("spek2")
-        }
         testLogging.showStandardStreams = true
         maxHeapSize = "1g"
     }
