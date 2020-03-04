@@ -16,12 +16,9 @@
  */
 
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.*
-import java.io.*
-import java.util.*
 
 plugins {
-    kotlin("multiplatform") version Vof.kotlinVersion
+    kotlin("multiplatform") version Vof.kotlin
     id("org.jetbrains.dokka") version Vof.dokka
     id("maven-publish")
     signing
@@ -46,13 +43,8 @@ setSigningExtrasFromProperties(properties)
 
 kotlin {
     jvm {
-        val main by compilations.getting {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
-        }
-        val test by compilations.getting {
-            kotlinOptions {
+        compilations.forEach {
+            it.kotlinOptions {
                 jvmTarget = "1.8"
             }
         }
@@ -66,77 +58,43 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
+                implementation(kotlin("stdlib-common", Vof.kotlin))
             }
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-                implementation("org.spekframework.spek2:spek-dsl-metadata:${Vof.spek}")
+                implementation(kotlin("test-common", Vof.kotlin))
+                implementation(kotlin("test-annotations-common", Vof.kotlin))
             }
         }
 
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
+                implementation(kotlin("stdlib-jdk8", Vof.kotlin))
             }
         }
 
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("reflect", Vof.kotlinVersion))
-                implementation(kotlin("test", Vof.kotlinVersion))
-
-
-                implementation("org.spekframework.spek2:spek-dsl-jvm:${Vof.spek}") {
-                    exclude("org.jetbrains.kotlin")
-                }
-
-                implementation("org.spekframework.spek2:spek-runner-junit5:${Vof.spek}") {
-                    exclude("org.jetbrains.kotlin")
-                    exclude("org.junit.platform")
-                }
-
-                implementation("org.junit.platform:junit-platform-launcher:${Vof.junitPlatform}")
+                implementation(kotlin("test", Vof.kotlin))
+                implementation(kotlin("test-junit", Vof.kotlin))
             }
 
-            jacoco {
-                toolVersion = Vof.jacocoTool
-            }
+
         }
         val jsMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-js"))
+                implementation(kotlin("stdlib-js", Vof.kotlin))
             }
         }
 
         val jsTest by getting {
             dependencies {
-                implementation(kotlin("test-js"))
-                implementation("org.spekframework.spek2:spek-dsl-js:${Vof.spek}")
+                implementation(kotlin("test-js", Vof.kotlin))
             }
         }
 
         tasks {
-            val jacocoReport = withType<JacocoReport> {
-                reports {
-                    html.isEnabled = true
-                    xml.isEnabled = true
-                    csv.isEnabled = false
-                }
-            }
-
-            named<Test>("jvmTest") {
-                outputs.upToDateWhen { false }
-                useJUnitPlatform {
-                    includeEngines("spek2")
-                }
-
-                maxHeapSize = "1g"
-                finalizedBy(jacocoReport)
-            }
-
             val dokka by getting(DokkaTask::class) {
                 outputDirectory = "$buildDir/docs"
                 outputFormat = "html"

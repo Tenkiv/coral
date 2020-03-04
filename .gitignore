@@ -100,3 +100,6 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Test files
+/src/jvmMain/kotlin/Test.kt
