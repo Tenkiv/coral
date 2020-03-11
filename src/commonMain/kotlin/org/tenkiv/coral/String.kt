@@ -17,5 +17,10 @@
 
 package org.tenkiv.coral
 
-@RequiresOptIn
-public annotation class ExperimentalCoralApi
+/**
+ * Trims the margin of the string using [trimMargin] and combines multiple lines into a single line by replacing the
+ * new line character with the specified [separator].
+ */
+@ExperimentalCoralApi
+public fun String.trimToSingleLine(marginPrefix: String = "|", separator: Char = ' '): String =
+    trimMargin(marginPrefix).replace('\n', separator)
