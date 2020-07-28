@@ -175,7 +175,7 @@ public inline fun <V, E, NE> Result<V, E>.flatMapError(transform: (error: E) -> 
 
 /**
  * Returns the encapsulated value if this instance represents [Result.Success] or the
- * result of [onFailure] function for encapsulated exception if it is [Result.Failure].
+ * result of [onFailure] function for encapsulated error if it is [Result.Failure].
  */
 @ExperimentalCoralApi
 public inline fun <E, V> Result<V, E>.getOrElse(onFailure: (error: E) -> V): V = when (this) {
@@ -191,6 +191,19 @@ public inline fun <E, V> Result<V, E>.getOrElse(onFailure: (error: E) -> V): V =
  */
 @ExperimentalCoralApi
 public fun <E, V> Result<V, E>.getOrDefault(defaultValue: V): V = getOrElse { defaultValue }
+
+/**
+ * Returns the encapsulated value if this instance represents [Result.Success] or throws the encapsulated exception
+ * if it is [Result.Failure].
+ */
+@ExperimentalCoralApi
+public fun <V> Result<V, Throwable>.getOrThrow(): V = getOrElse { throw it }
+
+/**
+ * Throws the encapsulated exception.
+ */
+@ExperimentalCoralApi
+public fun Result.Failure<Throwable>.throwException(): Nothing = throw error
 
 @ExperimentalCoralApi
 public fun <V> kotlin.Result<V>.toCoralResult(): Result<V, Throwable> =
