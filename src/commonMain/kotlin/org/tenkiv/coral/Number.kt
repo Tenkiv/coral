@@ -23,35 +23,35 @@ import kotlin.jvm.*
 import kotlin.math.*
 
 // unsigned integer types
-public typealias U8 = UByte
-public typealias U16 = UShort
-public typealias U32 = UInt
-public typealias U64 = ULong
+public typealias UInt8 = UByte
+public typealias UInt16 = UShort
+public typealias UInt32 = UInt
+public typealias UInt64 = ULong
 
 // signed integer types
-public typealias I8 = Byte
-public typealias I16 = Short
-public typealias I32 = Int
-public typealias I64 = Long
+public typealias Int8 = Byte
+public typealias Int16 = Short
+public typealias Int32 = Int
+public typealias Int64 = Long
 
 // floating point types
-public typealias F32 = Float
-public typealias F64 = Double
+public typealias Float32 = Float
+public typealias Float64 = Double
 
 private const val DEFAULT_DOUBLE_ULPS = 2_000
 
-public fun F64.feq(comparate: F64, epsilon: F64): Boolean = abs(this - comparate) <= epsilon
+public fun Float64.feq(comparate: Float64, epsilon: Float64): Boolean = abs(this - comparate) <= epsilon
 
-public fun F64.feq(comparate: F64, maxUlps: I32): Boolean {
+public fun Float64.feq(comparate: Float64, maxUlps: Int32): Boolean {
     //TODO: This might be more efficient if the double could broken down to long bits.
     val epsilon = if (comparate > this) comparate.ulp * maxUlps else this.ulp * maxUlps
 
     return feq(comparate, epsilon)
 }
 
-public infix fun F64.feq(comparate: F64): Boolean = feq(comparate, DEFAULT_DOUBLE_ULPS)
+public infix fun Float64.feq(comparate: Float64): Boolean = feq(comparate, DEFAULT_DOUBLE_ULPS)
 
-public fun F32.feq(comparate: F32, epsilon: F32): Boolean = abs(this - comparate) <= epsilon
+public fun Float32.feq(comparate: Float32, epsilon: Float32): Boolean = abs(this - comparate) <= epsilon
 
 
 private const val EXCEPTION_MSG = "The number being normalised is not in the specified range"
@@ -59,7 +59,7 @@ private const val EXCEPTION_MSG = "The number being normalised is not in the spe
 /**
  * @return null if the number to be normalised is outside the range.
  */
-public infix fun F64.normalToOrNull(range: ClosedRange<F64>): F64? {
+public infix fun Float64.normalToOrNull(range: ClosedRange<Float64>): Float64? {
     val min = range.start
     val max = range.endInclusive
 
@@ -75,7 +75,7 @@ public infix fun F64.normalToOrNull(range: ClosedRange<F64>): F64? {
  *
  * Normalises the number to the given range.
  */
-public infix fun F64.normalTo(range: ClosedRange<F64>): F64 {
+public infix fun Float64.normalTo(range: ClosedRange<Float64>): Float64 {
     val min = range.start
     val max = range.endInclusive
 
@@ -86,12 +86,12 @@ public infix fun F64.normalTo(range: ClosedRange<F64>): F64 {
     }
 }
 
-private fun normalise(number: F64, min: F64, max: F64): F64 = (number - min) / (max - min)
+private fun normalise(number: Float64, min: Float64, max: Float64): Float64 = (number - min) / (max - min)
 
 /**
  * @return null if the number to be normalised is outside the range.
  */
-public infix fun F32.normalToOrNull(range: ClosedRange<F32>): F32? {
+public infix fun Float32.normalToOrNull(range: ClosedRange<Float32>): Float32? {
     val min = range.start
     val max = range.endInclusive
 
@@ -107,7 +107,7 @@ public infix fun F32.normalToOrNull(range: ClosedRange<F32>): F32? {
  *
  * Normalises the number to the given range.
  */
-public infix fun F32.normalTo(range: ClosedRange<F32>): F32 {
+public infix fun Float32.normalTo(range: ClosedRange<Float32>): Float32 {
     val min = range.start
     val max = range.endInclusive
 
@@ -118,4 +118,4 @@ public infix fun F32.normalTo(range: ClosedRange<F32>): F32 {
     }
 }
 
-private fun normalise(number: F32, min: F32, max: F32): F32 = (number - min) / (max - min)
+private fun normalise(number: Float32, min: Float32, max: Float32): Float32 = (number - min) / (max - min)
