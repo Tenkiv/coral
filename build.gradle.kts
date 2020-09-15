@@ -93,7 +93,7 @@ kotlin {
             }
 
             val js by getting {
-                artifact(tasks.dokkaHtml)
+                artifact(tasks.dokkaJavadoc)
             }
         }.all {
             configureMavenPom(isRelease, project)
