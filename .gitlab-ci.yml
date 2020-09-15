@@ -21,4 +21,4 @@ debugTests:
 mavenDeploy:
   stage: deploy
   script:
-    - if grep -q "SNAPSHOT" gradle.properties; then ./gradlew publish; fi
+    - if grep -q "dev" gradle.properties; then ./gradlew publish; fi
