@@ -83,17 +83,24 @@ kotlin {
                 implementation(kotlin("test-js", Vof.kotlin))
             }
         }
+
+        tasks {
+            register<Jar>("javadocJar") {
+                from(dokkaJavadoc)
+                archiveClassifier.set("javadoc")
+            }
+        }
     }
 
     publishing {
 
         publications.withType<MavenPublication>().apply {
             val jvm by getting {
-                artifact(tasks.dokkaJavadoc)
+                artifact(tasks.getByName("javadocJar"))
             }
 
             val js by getting {
-                artifact(tasks.dokkaJavadoc)
+                artifact(tasks.getByName("javadocJar"))
             }
         }.all {
             configureMavenPom(isRelease, project)
