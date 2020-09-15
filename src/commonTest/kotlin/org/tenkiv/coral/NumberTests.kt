@@ -30,7 +30,7 @@ class EqualDoubleTests {
     )
 
     @Test
-    fun `default feq`() = equalDoubles.forEach { equalDoublesPair ->
+    fun default_feq() = equalDoubles.forEach { equalDoublesPair ->
         assertTrue(equalDoublesPair.first feq equalDoublesPair.second)
     }
 
@@ -43,7 +43,7 @@ class NotEqualDoublesTests {
     )
 
     @Test
-    fun `default feq`() {
+    fun default_feq() {
         notEqualDoubles.forEach {
             assertFalse(it.first feq it.second)
         }
@@ -56,12 +56,12 @@ class ApproximatelyEqualDoublesEpsilonTests {
     val second = 1_000_000_000.0002
 
     @Test
-    fun `feq with epsilon provided that is smaller than the difference between the numbers being compared`() {
+    fun feq_with_epsilon_provided_that_is_smaller_than_the_difference_between_the_numbers_being_compared() {
         assertFalse(first.feq(second, 0.00001))
     }
 
     @Test
-    fun `feq with epsilon provided that is larger than the difference between the numbers being compared`() {
+    fun feq_with_epsilon_provided_that_is_larger_than_the_difference_between_the_numbers_being_compared() {
         assertTrue(first.feq(second, 0.01))
     }
 
@@ -72,12 +72,12 @@ class ApproximatelyEqualDoublesUlpTests {
     val second = 1_000_000_000.0000003
 
     @Test
-    fun `feq with maxUlps provided that is smaller than the number of ulps between the numbers`() {
+    fun feq_with_maxUlps_provided_that_is_smaller_than_the_number_of_ulps_between_the_numbers() {
         assertFalse(first.feq(second, 1))
     }
 
     @Test
-    fun `feq with maxUlps provided that is greater than the number of ulps between the numbers`() {
+    fun feq_with_maxUlps_provided_that_is_greater_than_the_number_of_ulps_between_the_numbers() {
         assertTrue(first.feq(second, 2))
     }
 
