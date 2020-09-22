@@ -40,6 +40,8 @@ val properties = createPropertiesFromLocal()
 setSigningExtrasFromProperties(properties)
 
 kotlin {
+    explicitApi()
+
     jvm {
         compilations.all {
             kotlinOptions {

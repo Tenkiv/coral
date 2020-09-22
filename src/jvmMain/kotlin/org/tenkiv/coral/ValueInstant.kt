@@ -32,14 +32,9 @@ public interface ValueInstant<out T> {
     public val value: T
     public val instant: Instant
 
-    public operator fun component1() = value
-    public operator fun component2() = instant
+    public operator fun component1(): T = value
+    public operator fun component2(): Instant = instant
 
-    public companion object {
-        @Deprecated("Use at(Instant) function instead", ReplaceWith("at(Instant)"))
-        public operator fun <T> invoke(value: T, instant: Instant = Instant.now()): ValueInstant<T> =
-            BasicValueInstant(value, instant)
-    }
 }
 
 private data class BasicValueInstant<out T>(

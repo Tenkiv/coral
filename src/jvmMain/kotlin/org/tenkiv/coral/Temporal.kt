@@ -92,8 +92,8 @@ public val Long.nanosSpan: Duration get() = Duration.ofNanos(this)
 )
 public val Int.nanosSpan: Duration get() = Duration.ofNanos(this.toLong())
 
-public infix fun Instant.isOlderThan(age: TemporalAmount) =
+public infix fun Instant.isOlderThan(age: TemporalAmount): Boolean =
     this.isBefore(Instant.now() - age)
 
-public fun Instant.isOlderThan(age: TemporalAmount, now: Instant) =
+public fun Instant.isOlderThan(age: TemporalAmount, now: Instant): Boolean =
     this.isBefore(now - age)
