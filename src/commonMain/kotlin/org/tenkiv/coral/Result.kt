@@ -50,39 +50,39 @@ public sealed class Result<out V, out E> {
      */
     @ExperimentalCoralApi
     public inline fun <R> fold(onSuccess: (value: V) -> R, onFailure: (error: E) -> R): R = when (this) {
-        is Success -> onSuccess(value)
+        is OK -> onSuccess(value)
         is Failure -> onFailure(error)
     }
 
     /**
      * Returns the encapsulated result of the given [transform] function applied to encapsulated value
-     * if this instance represents [Success] or the
+     * if this instance represents [OK] or the
      * original encapsulated exception if it is [Failure].
      */
     @ExperimentalCoralApi
     public inline fun <R> map(transform: (value: V) -> R): Result<R, E> = when (this) {
-        is Success -> Success(transform(value))
+        is OK -> OK(transform(value))
         is Failure -> this
     }
 
     /**
      * Returns the encapsulated result of the given [transform] function applied to encapsulated error
      * if this instance represents [Failure] or the
-     * original encapsulated value if it is [Success].
+     * original encapsulated value if it is [OK].
      */
     @ExperimentalCoralApi
-    public inline fun <NE> mapError(transform: (error: E) -> NE): Result<V, NE> = when (this) {
-        is Success -> this
+    public inline fun <NewErrorT> mapError(transform: (error: E) -> NewErrorT): Result<V, NewErrorT> = when (this) {
+        is OK -> this
         is Failure -> Failure(transform(error))
     }
 
     /**
-     * Performs the given action on encapsulated value if this instance represents [Success].
+     * Performs the given action on encapsulated value if this instance represents [OK].
      * Returns the original [Result] unchanged.
      */
     @ExperimentalCoralApi
     public inline fun onSuccess(action: (value: V) -> Unit): Result<V, E> {
-        if (this is Success) action(value)
+        if (this is OK) action(value)
         return this
     }
 
@@ -97,30 +97,30 @@ public sealed class Result<out V, out E> {
     }
 
     @ExperimentalCoralApi
-    public data class Success<out V>(public val value: V) : Result<V, Nothing>() {
+    public data class OK<out V>(public val value: V) : Result<V, Nothing>() {
 
         /**
-         * Always returns true since the [Success] type represents a successful [Result].
+         * Always returns true since the [OK] type represents a successful [Result].
          */
         @ExperimentalCoralApi
         public override val isSuccess: Boolean
             get() = true
 
         /**
-         * Always returns false since the [Success] type represents a successful [Result].
+         * Always returns false since the [OK] type represents a successful [Result].
          */
         @ExperimentalCoralApi
         public override val isFailure: Boolean
             get() = false
 
         /**
-         * Always returns the encapsulated value since the [Success] type represents a successful [Result].
+         * Always returns the encapsulated value since the [OK] type represents a successful [Result].
          */
         @ExperimentalCoralApi
         public override fun getValueOrNull(): V = value
 
         /**
-         * Always returns null since the [Success] type represents a successful [Result].
+         * Always returns null since the [OK] type represents a successful [Result].
          */
         @ExperimentalCoralApi
         public override fun getErrorOrNull(): Nothing? = null
@@ -161,30 +161,30 @@ public sealed class Result<out V, out E> {
 }
 
 @ExperimentalCoralApi
-public inline fun <V, E, R> Result<V, E>.flatMap(transform: (value: V) -> Result<R, E>): Result<R, E> = when (this) {
-    is Result.Success -> transform(value)
+public inline fun <V, E, NewValueT> Result<V, E>.flatMap(transform: (value: V) -> Result<NewValueT, E>): Result<NewValueT, E> = when (this) {
+    is Result.OK -> transform(value)
     is Result.Failure -> this
 }
 
 @ExperimentalCoralApi
-public inline fun <V, E, NE> Result<V, E>.flatMapError(transform: (error: E) -> Result<V, NE>): Result<V, NE> =
+public inline fun <V, E, NewErrorT> Result<V, E>.flatMapError(transform: (error: E) -> Result<V, NewErrorT>): Result<V, NewErrorT> =
     when (this) {
-        is Result.Success -> this
+        is Result.OK -> this
         is Result.Failure -> transform(error)
     }
 
 /**
- * Returns the encapsulated value if this instance represents [Result.Success] or the
+ * Returns the encapsulated value if this instance represents [Result.OK] or the
  * result of [onFailure] function for encapsulated error if it is [Result.Failure].
  */
 @ExperimentalCoralApi
 public inline fun <E, V> Result<V, E>.getOrElse(onFailure: (error: E) -> V): V = when (this) {
-    is Result.Success -> this.value
+    is Result.OK -> this.value
     is Result.Failure -> onFailure(error)
 }
 
 /**
- * Returns the encapsulated value if this instance represents [Result.Success] or the
+ * Returns the encapsulated value if this instance represents [Result.OK] or the
  * [defaultValue] if it is [Result.Failure].
  *
  * This function is shorthand for `getOrElse { defaultValue }` (see [getOrElse]).
@@ -193,7 +193,7 @@ public inline fun <E, V> Result<V, E>.getOrElse(onFailure: (error: E) -> V): V =
 public fun <E, V> Result<V, E>.getOrDefault(defaultValue: V): V = getOrElse { defaultValue }
 
 /**
- * Returns the encapsulated value if this instance represents [Result.Success] or throws the encapsulated exception
+ * Returns the encapsulated value if this instance represents [Result.OK] or throws the encapsulated exception
  * if it is [Result.Failure].
  */
 @ExperimentalCoralApi
@@ -208,7 +208,7 @@ public fun Result.Failure<Throwable>.throwException(): Nothing = throw error
 @ExperimentalCoralApi
 public fun <V> kotlin.Result<V>.toCoralResult(): Result<V, Throwable> =
     fold(onSuccess = {
-        Result.Success(it)
+        Result.OK(it)
     },
         onFailure = {
             Result.Failure(it)
