@@ -16,11 +16,15 @@
  */
 
 @file:JvmName("NumberCommon")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package org.tenkiv.coral
 
 import kotlin.jvm.*
 import kotlin.math.*
+
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ ஃ Type Aliases ஃ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+// TODO: Documentation of typealiased numbers
 
 // unsigned integer types
 public typealias UInt8 = UByte
@@ -37,6 +41,109 @@ public typealias Int64 = Long
 // floating point types
 public typealias Float32 = Float
 public typealias Float64 = Double
+
+public inline fun Number.toInt8(): Int8 = toByte()
+public inline fun Number.toInt16(): Int16 = toShort()
+public inline fun Number.toInt32(): Int32 = toInt()
+public inline fun Number.toInt64(): Int64 = toLong()
+public inline fun Number.toFloat32(): Float32 = toFloat()
+public inline fun Number.toFloat64(): Float64 = toDouble()
+
+public inline fun UInt8.toUInt16(): UInt16 = toUShort()
+public inline fun UInt8.toUInt32(): UInt32 = toUInt()
+public inline fun UInt8.toUInt64(): UInt64 = toULong()
+public inline fun UInt8.toInt8(): Int8 = toByte()
+public inline fun UInt8.toInt16(): Int16 = toShort()
+public inline fun UInt8.toInt32(): Int32 = toInt()
+public inline fun UInt8.toInt64(): Int64 = toLong()
+public inline fun UInt8.toFloat32(): Float32 = toFloat()
+public inline fun UInt8.toFloat64(): Float64 = toDouble()
+
+public inline fun UInt16.toUInt8(): UInt8 = toUByte()
+public inline fun UInt16.toUInt32(): UInt32 = toUInt()
+public inline fun UInt16.toUInt64(): UInt64 = toULong()
+public inline fun UInt16.toInt8(): Int8 = toByte()
+public inline fun UInt16.toInt16(): Int16 = toShort()
+public inline fun UInt16.toInt32(): Int32 = toInt()
+public inline fun UInt16.toInt64(): Int64 = toLong()
+public inline fun UInt16.toFloat32(): Float32 = toFloat()
+public inline fun UInt16.toFloat64(): Float64 = toDouble()
+
+public inline fun UInt32.toUInt8(): UInt8 = toUByte()
+public inline fun UInt32.toUInt16(): UInt16 = toUShort()
+public inline fun UInt32.toUInt64(): UInt64 = toULong()
+public inline fun UInt32.toInt8(): Int8 = toByte()
+public inline fun UInt32.toInt16(): Int16 = toShort()
+public inline fun UInt32.toInt32(): Int32 = toInt()
+public inline fun UInt32.toInt64(): Int64 = toLong()
+public inline fun UInt32.toFloat32(): Float32 = toFloat()
+public inline fun UInt32.toFloat64(): Float64 = toDouble()
+
+public inline fun UInt64.toUInt8(): UInt8 = toUByte()
+public inline fun UInt64.toUInt16(): UInt16 = toUShort()
+public inline fun UInt64.toUInt32(): UInt32 = toUInt()
+public inline fun UInt64.toInt8(): Int8 = toByte()
+public inline fun UInt64.toInt16(): Int16 = toShort()
+public inline fun UInt64.toInt32(): Int32 = toInt()
+public inline fun UInt64.toInt64(): Int64 = toLong()
+public inline fun UInt64.toFloat32(): Float32 = toFloat()
+public inline fun UInt64.toFloat64(): Float64 = toDouble()
+
+public inline fun Int8.toUInt8(): UInt8 = toUByte()
+public inline fun Int8.toUInt16(): UInt16 = toUShort()
+public inline fun Int8.toUInt32(): UInt32 = toUInt()
+public inline fun Int8.toUInt64(): UInt64 = toULong()
+public inline fun Int8.toInt16(): Int16 = toShort()
+public inline fun Int8.toInt32(): Int32 = toInt()
+public inline fun Int8.toInt64(): Int64 = toLong()
+public inline fun Int8.toFloat32(): Float32 = toFloat()
+public inline fun Int8.toFloat64(): Float64 = toDouble()
+
+public inline fun Int16.toUInt8(): UInt8 = toUByte()
+public inline fun Int16.toUInt16(): UInt16 = toUShort()
+public inline fun Int16.toUInt32(): UInt32 = toUInt()
+public inline fun Int16.toUInt64(): UInt64 = toULong()
+public inline fun Int16.toInt8(): Int8 = toByte()
+public inline fun Int16.toInt32(): Int32 = toInt()
+public inline fun Int16.toInt64(): Int64 = toLong()
+public inline fun Int16.toFloat32(): Float32 = toFloat()
+public inline fun Int16.toFloat64(): Float64 = toDouble()
+
+public inline fun Int32.toUInt8(): UInt8 = toUByte()
+public inline fun Int32.toUInt16(): UInt16 = toUShort()
+public inline fun Int32.toUInt32(): UInt32 = toUInt()
+public inline fun Int32.toUInt64(): UInt64 = toULong()
+public inline fun Int32.toInt8(): Int8 = toByte()
+public inline fun Int32.toInt16(): Int16 = toShort()
+public inline fun Int32.toInt64(): Int64 = toLong()
+public inline fun Int32.toFloat32(): Float32 = toFloat()
+public inline fun Int32.toFloat64(): Float64 = toDouble()
+
+public inline fun Int64.toUInt8(): UInt8 = toUByte()
+public inline fun Int64.toUInt16(): UInt16 = toUShort()
+public inline fun Int64.toUInt32(): UInt32 = toUInt()
+public inline fun Int64.toUInt64(): UInt64 = toULong()
+public inline fun Int64.toInt8(): Int8 = toByte()
+public inline fun Int64.toInt16(): Int16 = toShort()
+public inline fun Int64.toInt32(): Int32 = toInt()
+public inline fun Int64.toFloat32(): Float32 = toFloat()
+public inline fun Int64.toFloat64(): Float64 = toDouble()
+
+public inline fun Float32.toUInt32(): UInt32 = toUInt()
+public inline fun Float32.toUInt64(): UInt64 = toULong()
+public inline fun Float32.toInt32(): Int32 = toInt()
+public inline fun Float32.toInt64(): Int64 = toLong()
+public inline fun Float32.toFloat64(): Float64 = toDouble()
+
+public inline fun Float64.toUInt32(): UInt32 = toUInt()
+public inline fun Float64.toUInt64(): UInt64 = toULong()
+public inline fun Float64.toInt32(): Int32 = toInt()
+public inline fun Float64.toInt64(): Int64 = toLong()
+public inline fun Float64.toFloat32(): Float32 = toFloat()
+public inline fun Float64.toFloat64(): Float64 = toDouble()
+
+
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ ஃ feq ஃ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 
 private const val DEFAULT_DOUBLE_ULPS = 2_000
 
@@ -55,6 +162,8 @@ public fun Float32.feq(comparate: Float32, epsilon: Float32): Boolean = abs(this
 
 
 private const val EXCEPTION_MSG = "The number being normalised is not in the specified range"
+
+//▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ ஃ Other Math ஃ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 
 /**
  * @return null if the number to be normalised is outside the range.
