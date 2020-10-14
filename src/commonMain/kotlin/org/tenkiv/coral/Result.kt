@@ -161,10 +161,11 @@ public sealed class Result<out V, out E> {
 }
 
 @ExperimentalCoralApi
-public inline fun <V, E, NewValueT> Result<V, E>.flatMap(transform: (value: V) -> Result<NewValueT, E>): Result<NewValueT, E> = when (this) {
-    is Result.OK -> transform(value)
-    is Result.Failure -> this
-}
+public inline fun <V, E, NewValueT> Result<V, E>.flatMap(transform: (value: V) -> Result<NewValueT, E>): Result<NewValueT, E> =
+    when (this) {
+        is Result.OK -> transform(value)
+        is Result.Failure -> this
+    }
 
 @ExperimentalCoralApi
 public inline fun <V, E, NewErrorT> Result<V, E>.flatMapError(transform: (error: E) -> Result<V, NewErrorT>): Result<V, NewErrorT> =
@@ -191,6 +192,14 @@ public inline fun <E, V> Result<V, E>.getOrElse(onFailure: (error: E) -> V): V =
  */
 @ExperimentalCoralApi
 public fun <E, V> Result<V, E>.getOrDefault(defaultValue: V): V = getOrElse { defaultValue }
+
+/**
+ * @throws Exception if this result is a failure. Message contains the encapsulated error as a String.
+ */
+@ExperimentalCoralApi
+public fun Result<*, *>.throwIfFailure() {
+    if (this is Result.Failure) throw Exception("Exception thrown from failed result with error: $error")
+}
 
 /**
  * Returns the encapsulated value if this instance represents [Result.OK] or throws the encapsulated exception
