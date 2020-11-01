@@ -17,5 +17,6 @@
 
 package org.tenkiv.coral
 
+@Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS)
 @RequiresOptIn
 public annotation class ExperimentalCoralApi
