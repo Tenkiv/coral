@@ -20,7 +20,7 @@ package org.tenkiv.coral
 @ExperimentalCoralApi
 public typealias OK<V> = Result.OK<V>
 @ExperimentalCoralApi
-public typealias Error<E> = Result.Error<E>
+public typealias Failure<E> = Result.Failure<E>
 
 @ExperimentalCoralApi
 public sealed class Result<out V, out E> {
@@ -56,29 +56,29 @@ public sealed class Result<out V, out E> {
     @ExperimentalCoralApi
     public inline fun <R> fold(onSuccess: (value: V) -> R, onFailure: (error: E) -> R): R = when (this) {
         is OK -> onSuccess(value)
-        is Error -> onFailure(error)
+        is Failure -> onFailure(error)
     }
 
     /**
      * Returns the encapsulated result of the given [transform] function applied to encapsulated value
      * if this instance represents [OK] or the
-     * original encapsulated exception if it is [Error].
+     * original encapsulated exception if it is [Failure].
      */
     @ExperimentalCoralApi
     public inline fun <R> map(transform: (value: V) -> R): Result<R, E> = when (this) {
         is OK -> OK(transform(value))
-        is Error -> this
+        is Failure -> this
     }
 
     /**
      * Returns the encapsulated result of the given [transform] function applied to encapsulated error
-     * if this instance represents [Error] or the
+     * if this instance represents [Failure] or the
      * original encapsulated value if it is [OK].
      */
     @ExperimentalCoralApi
     public inline fun <NewErrorT> mapError(transform: (error: E) -> NewErrorT): Result<V, NewErrorT> = when (this) {
         is OK -> this
-        is Error -> Error(transform(error))
+        is Failure -> Failure(transform(error))
     }
 
     /**
@@ -92,12 +92,12 @@ public sealed class Result<out V, out E> {
     }
 
     /**
-     * Performs the given action on encapsulated error if this instance represents [Error].
+     * Performs the given action on encapsulated error if this instance represents [Failure].
      * Returns the original [Result] unchanged.
      */
     @ExperimentalCoralApi
     public inline fun onFailure(action: (error: E) -> Unit): Result<V, E> {
-        if (this is Error) action(error)
+        if (this is Failure) action(error)
         return this
     }
 
@@ -133,30 +133,30 @@ public sealed class Result<out V, out E> {
     }
 
     @ExperimentalCoralApi
-    public data class Error<out E>(public val error: E) : Result<Nothing, E>() {
+    public data class Failure<out E>(public val error: E) : Result<Nothing, E>() {
 
         /**
-         * Always returns false since the [Error] type represents a failed [Result].
+         * Always returns false since the [Failure] type represents a failed [Result].
          */
         @ExperimentalCoralApi
         public override val isSuccess: Boolean
             get() = false
 
         /**
-         * Always returns true since the [Error] type represents a failed [Result].
+         * Always returns true since the [Failure] type represents a failed [Result].
          */
         @ExperimentalCoralApi
         public override val isFailure: Boolean
             get() = true
 
         /**
-         * Always returns null since the [Error] type represents a failed [Result].
+         * Always returns null since the [Failure] type represents a failed [Result].
          */
         @ExperimentalCoralApi
         public override fun getValueOrNull(): Nothing? = null
 
         /**
-         * Always returns the encapsulated error since the [Error] type represents a failed [Result].
+         * Always returns the encapsulated error since the [Failure] type represents a failed [Result].
          */
         @ExperimentalCoralApi
         public override fun getErrorOrNull(): E = error
@@ -169,29 +169,29 @@ public sealed class Result<out V, out E> {
 public inline fun <V, E, NewValueT> Result<V, E>.flatMap(transform: (value: V) -> Result<NewValueT, E>): Result<NewValueT, E> =
     when (this) {
         is Result.OK -> transform(value)
-        is Result.Error -> this
+        is Result.Failure -> this
     }
 
 @ExperimentalCoralApi
 public inline fun <V, E, NewErrorT> Result<V, E>.flatMapError(transform: (error: E) -> Result<V, NewErrorT>): Result<V, NewErrorT> =
     when (this) {
         is Result.OK -> this
-        is Result.Error -> transform(error)
+        is Result.Failure -> transform(error)
     }
 
 /**
  * Returns the encapsulated value if this instance represents [Result.OK] or the
- * result of [onFailure] function for encapsulated error if it is [Result.Error].
+ * result of [onFailure] function for encapsulated error if it is [Result.Failure].
  */
 @ExperimentalCoralApi
 public inline fun <E, V> Result<V, E>.getOrElse(onFailure: (error: E) -> V): V = when (this) {
     is Result.OK -> this.value
-    is Result.Error -> onFailure(error)
+    is Result.Failure -> onFailure(error)
 }
 
 /**
  * Returns the encapsulated value if this instance represents [Result.OK] or the
- * [defaultValue] if it is [Result.Error].
+ * [defaultValue] if it is [Result.Failure].
  *
  * This function is shorthand for `getOrElse { defaultValue }` (see [getOrElse]).
  */
@@ -203,12 +203,12 @@ public fun <E, V> Result<V, E>.getOrDefault(defaultValue: V): V = getOrElse { de
  */
 @ExperimentalCoralApi
 public fun Result<*, *>.throwIfFailure() {
-    if (this is Result.Error) throw Exception("Exception thrown from failed result with error: $error")
+    if (this is Result.Failure) throw Exception("Exception thrown from failed result with error: $error")
 }
 
 /**
  * Returns the encapsulated value if this instance represents [Result.OK] or throws the encapsulated exception
- * if it is [Result.Error].
+ * if it is [Result.Failure].
  */
 @ExperimentalCoralApi
 public fun <V> Result<V, Throwable>.getOrThrow(): V = getOrElse { throw it }
@@ -217,7 +217,7 @@ public fun <V> Result<V, Throwable>.getOrThrow(): V = getOrElse { throw it }
  * Throws the encapsulated exception.
  */
 @ExperimentalCoralApi
-public fun Result.Error<Throwable>.throwException(): Nothing = throw error
+public fun Result.Failure<Throwable>.throwException(): Nothing = throw error
 
 @ExperimentalCoralApi
 public fun <V> kotlin.Result<V>.toCoralResult(): Result<V, Throwable> =
@@ -225,5 +225,5 @@ public fun <V> kotlin.Result<V>.toCoralResult(): Result<V, Throwable> =
         Result.OK(it)
     },
         onFailure = {
-            Result.Error(it)
+            Result.Failure(it)
         })
