@@ -26,6 +26,7 @@ plugins {
 buildscript {
     repositories {
         jcenter()
+        gradlePluginPortal()
         mavenCentral()
     }
 }
@@ -85,24 +86,11 @@ kotlin {
             }
         }
 
-        tasks {
-            register<Jar>("javadocJar") {
-                from(dokkaJavadoc)
-                archiveClassifier.set("javadoc")
-            }
-        }
+
     }
 
     publishing {
-        publications.withType<MavenPublication>().apply {
-            val jvm by getting {
-                artifact(tasks.getByName("javadocJar"))
-            }
-
-            val js by getting {
-                artifact(tasks.getByName("javadocJar"))
-            }
-        }.all {
+        publications.withType<MavenPublication>().all {
             configureMavenPom(project)
             signing { if (isRelease) sign(this@all) }
         }
