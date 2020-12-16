@@ -90,7 +90,13 @@ kotlin {
     }
 
     publishing {
-        publications.withType<MavenPublication>().all {
+        publications.withType<MavenPublication>().apply {
+            val kotlinMultiplatform by getting {
+                artifact(tasks.getByName("metadataSourcesJar")) {
+                    classifier = "sources"
+                }
+            }
+        }.all {
             configureMavenPom(project)
             signing { if (isRelease) sign(this@all) }
         }
