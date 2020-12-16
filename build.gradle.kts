@@ -35,7 +35,6 @@ repositories {
     mavenCentral()
 }
 
-val isRelease = isRelease()
 val properties = createPropertiesFromLocal()
 setSigningExtrasFromProperties(properties)
 
@@ -95,7 +94,6 @@ kotlin {
     }
 
     publishing {
-
         publications.withType<MavenPublication>().apply {
             val jvm by getting {
                 artifact(tasks.getByName("javadocJar"))
@@ -105,10 +103,10 @@ kotlin {
                 artifact(tasks.getByName("javadocJar"))
             }
         }.all {
-            configureMavenPom(isRelease, project)
+            configureMavenPom(project)
             signing { if (isRelease) sign(this@all) }
         }
 
-        setMavenRepositories(isRelease, properties)
+        setMavenRepositories()
     }
 }
