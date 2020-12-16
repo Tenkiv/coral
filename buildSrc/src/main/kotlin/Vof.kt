@@ -16,6 +16,6 @@
  */
 
 object Vof {
-    const val kotlin = "1.4.10"
-    const val dokka = "1.4.0"
+    const val kotlin = "1.4.21"
+    const val dokka = "1.4.20"
 }
